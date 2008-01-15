@@ -113,11 +113,13 @@ def scrape_timetable(html=None, format=FORMAT_PYTHON):
             onerow = []
             rows += 1
 
-            # XXX refactor, beware of duplicated station name
+            # XXX refactor
             for th in tr('th'):
                 if th.string is None:
                     th.string = ''
-                onerow.append(th.string.replace('&nbsp;', ' ').strip())
+                t = th.string.replace('&nbsp;', ' ').strip()
+                if t not in onerow:
+                    onerow.append(t)
 
             tds = 0
             reset_am = True
@@ -151,7 +153,6 @@ def scrape_timetable(html=None, format=FORMAT_PYTHON):
 
         alltables.append(onetable)
 
-    # XXX JSON/Python/HTML
     if format == FORMAT_PYTHON:
         return onetable
     elif format == FORMAT_HTML:
