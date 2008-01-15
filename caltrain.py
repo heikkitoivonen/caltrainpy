@@ -1,18 +1,21 @@
 #!/usr/bin/env python
 # PYTHON SOFTWARE FOUNDATION LICENSE VERSION 2
-# Copyright (c) 2007 Heikki Toivonen
+# Copyright (c) 2007-2008 Heikki Toivonen
 #
 # MultiListbox Copyright:
 #   Brent Burley 2001
 #   Pedro Werneck 2003
 #   Heikki Toivonen 2007
 #
-# CaltrainPy 0.1
+# CaltrainPy 0.2
 #
 # Caltrain schedule for systems that have Python and Tkinter, for
 # example Windows Mobile.
 #
 # Tested on Cingular 8525 running Windows Mobile 5 and Python 2.5+Tkinter.
+#
+# Additionally there are functions to scrape the shedule from HTML and
+# return it in more machine-accessible form.
 #
 # My installation:
 # Download PythonCE 2.5 and Tkinter from:
@@ -40,8 +43,25 @@
 # ...
 
 import array
-import _tkinter # Seems to help some with DLL load problems
-from Tkinter import *
+from urllib2 import urlopen
+
+try:
+    import _tkinter # Seems to help some with DLL load problems
+    from Tkinter import *
+    have_tkinter = True
+except ImportError:
+    class Frame: pass
+    have_tkinter = False
+
+try:
+    from BeautifulSoup import BeautifulSoup
+    have_beautifulsoup = True
+except ImportError:
+    have_beautifulsoup = False
+
+FORMAT_PYTHON = 'python'
+FORMAT_JSON   = 'json'
+FORMAT_HTML   = 'html'
 
 # Constant strings
 weekday = "Mon-Fri"
@@ -59,6 +79,96 @@ stations = {
     weekday: {northbound:None, southbound:None},
     weekend: {northbound:None, southbound:None},
     }
+
+def scrape_timetable(html=None, format=FORMAT_PYTHON):
+    """
+    Scrape timetables from HTML, and return them in machine readable format.
+
+    @param html:   If None, fetch the timetable first, otherwise expected to be
+                   the HTML string to parse.
+    @param format: In what format should results be returns, default
+                   FORMAT_PYTHON. Other legal values FORMAT_JSON, FORMAT_HTML.
+    """
+    if not have_beautifulsoup:
+        raise Exception('Need BeautifulSoup')
+
+    if html is None:
+        html = urlopen('http://caltrain.com/timetable.html').read()
+    # XXX need to sanitize HTML, cells with special chars
+    # XXX add legend, including baby bullet, limited and bus
+    
+    soup = BeautifulSoup(html)
+    tables = 0
+    alltables = []
+    amDict = {True: ' AM', False: ' PM'}
+    for table in soup('table'):
+        tables += 1
+        if tables == 1:
+            continue #legend
+        
+        rows = 0
+        onetable = []
+        am = True
+        for tr in table('tr'):
+            onerow = []
+            rows += 1
+
+            # XXX refactor, beware of duplicated station name
+            for th in tr('th'):
+                if th.string is None:
+                    th.string = ''
+                onerow.append(th.string.replace('&nbsp;', ' ').strip())
+
+            tds = 0
+            reset_am = True
+            for td in tr('td'):
+                tds += 1
+                
+                if td.string is None:
+                    td.string = ''
+                t = td.string.replace('&nbsp;', ' ').strip()
+
+                if '12:' in t: # Relying on timetables not jumping over 12
+                    if am:
+                        am = False
+                    else:
+                        am = True
+                        
+                if tds == 1:
+                    reset_am = am
+                
+                if t and '-' not in t:
+                    # Add AM/PM. First row starts in AM. Entries in row
+                    # switch when value include 12 hours. Similarly for
+                    # entries in column.
+                    t += amDict[am]
+                onerow.append(t)
+
+            am = reset_am # Relying on trip taking < 12 hours
+
+            onetable.append(onerow)
+        assert rows == 30 or rows == 27, rows
+
+        alltables.append(onetable)
+
+    # XXX JSON/Python/HTML
+    if format == FORMAT_PYTHON:
+        return onetable
+    elif format == FORMAT_HTML:
+        ret = []
+        for onetable in alltables:
+            ret.append('<table border="1">')
+            for row in onetable:
+                ret.append('<tr>')
+                for entry in row:
+                    ret.append('<td>%s</td>' % entry)
+                ret.append('</tr>')
+            ret.append('</table>')
+        return ''.join(ret)
+    else: # FORMAT_JSON
+        raise NotImplementedError
+
+
 
 # To get the service & stations:
 # 1. Open HTML in OpenOffice.org writer, copy a schedule table, and paste into
@@ -108,6 +218,9 @@ stations[weekend][southbound] = ['San Francisco', 'Bayshore', 'x8:10', 'So. San 
 # http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/52266
 class MultiListbox(Frame):
     def __init__(self, master, lists):
+        if not have_tkinter:
+            raise Exception('Need Tkinter')
+        
 	Frame.__init__(self, master)
 	self.lists = []
 	for l,w in lists:
