@@ -162,12 +162,12 @@ def scrape_timetable(html=None, format=FORMAT_PYTHON):
                 ret.append('<tr>')
                 for entry in row:
                     ret.append('<td>%s</td>' % entry)
-                ret.append('</tr>')
-            ret.append('</table>')
+                ret.append('</tr>\n')
+            ret.append('</table>\n')
         return ''.join(ret)
     else: # FORMAT_JSON
-        raise NotImplementedError
-
+        import json
+        return json.write(onetable)
 
 
 # To get the service & stations:
