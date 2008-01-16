@@ -167,6 +167,7 @@ def scrape_timetable(html=None, format=FORMAT_PYTHON):
             # arrival and departure times
             tds = 0
             reset_am = True
+            last12 = False # Did last loop contain 12:xx?
             for td in tr('td'):
                 tds += 1
                 
@@ -175,10 +176,14 @@ def scrape_timetable(html=None, format=FORMAT_PYTHON):
                 t = td.string.replace('&nbsp;', ' ').strip()
 
                 if '12:' in t: # Relying on timetables not jumping over 12
-                    if am:
-                        am = False
-                    else:
-                        am = True
+                    if not last12:
+                        if am:
+                            am = False
+                        else:
+                            am = True
+                    last12 = True
+                else:
+                    last12 = False
                         
                 if tds == 1:
                     reset_am = am
@@ -206,6 +211,10 @@ def scrape_timetable(html=None, format=FORMAT_PYTHON):
             for row in onetable:
                 ret.append('<tr>')
                 for entry in row:
+                    #great for debug:
+                    #if 'PM' in entry:
+                    #    ret.append('<td bgcolor="red">%s</td>' % entry)
+                    #else:
                     ret.append('<td>%s</td>' % entry)
                 ret.append('</tr>\n')
             ret.append('</table>\n')
