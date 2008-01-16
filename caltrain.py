@@ -50,6 +50,8 @@ parsing etc.
 # - AM/PM indicators
 # - train types
 # - can be used as a module to parse Caltrain schedule
+# - MIT License
+# - setup.py
 # Caltrain 0.1
 # - initial release
 #

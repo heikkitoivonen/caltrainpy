@@ -22,17 +22,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from setuptools import setup, find_packages
+from distutils.core import setup
 
 setup(
-    name = "CaltrainPy",
+    name = "caltrain",
     version = "0.2",
     description = "GUI and library for Caltrain schedules",
     author = "Heikki Toivonen",
     author_email = "heikki@osafoundation.org",
     license = "The MIT License",
-    packages = find_packages(),
-    extras_require = {'JSON': ['python-jason >=3.4', 'BeautifulSoup >=3.0.4'],
-                      'parser': ['BeautifulSoup >=3.0.4'],
-                      },
+    py_modules = ["caltrain"],
+    #extras_require = {'JSON': ['python-jason >=3.4', 'BeautifulSoup >=3.0.4'],
+    #                  'parser': ['BeautifulSoup >=3.0.4'],
+    #                  },
 )
