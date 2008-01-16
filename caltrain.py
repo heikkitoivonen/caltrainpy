@@ -94,14 +94,20 @@ def scrape_timetable(html=None, format=FORMAT_PYTHON):
 
     if html is None:
         html = urlopen('http://caltrain.com/timetable.html').read()
-    # XXX need to sanitize HTML, cells with special chars
-    # XXX add legend, including baby bullet, limited and bus
+
+    # Sanitize the input a little, otherwise we'll miss some cells
+    # 1. Sharks game, train departs at this time or later
+    html = html.replace('<sup><a href="#note-sharks">#</a></sup>', '')
+    # 2. Six minute timed transfer in Redwood City
+    html = html.replace('<sup><a href="#note-xfer">@</a></sup>', '')
+    # 3. Newlines to spaces
+    html = html.replace('<br>', ' ')
     
     soup = BeautifulSoup(html)
+    
     tables = 0
     alltables = []
     amDict = {True: ' AM', False: ' PM'}
-    
     # bgcolor attribute shows what kind of train, no color is normal train
     bgcolor = {'#F0B2A1': '(b)', # baby bullet
                '#F7E89D': '(x)'} # limited aka express
