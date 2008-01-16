@@ -101,6 +101,11 @@ def scrape_timetable(html=None, format=FORMAT_PYTHON):
     tables = 0
     alltables = []
     amDict = {True: ' AM', False: ' PM'}
+    
+    # bgcolor attribute shows what kind of train, no color is normal train
+    bgcolor = {'#F0B2A1': '(b)', # baby bullet
+               '#F7E89D': '(x)'} # limited aka express
+    
     for table in soup('table'):
         tables += 1
         if tables == 1:
@@ -113,14 +118,17 @@ def scrape_timetable(html=None, format=FORMAT_PYTHON):
             onerow = []
             rows += 1
 
-            # XXX refactor
+            # train numbers and types
             for th in tr('th'):
                 if th.string is None:
                     th.string = ''
                 t = th.string.replace('&nbsp;', ' ').strip()
                 if t not in onerow:
-                    onerow.append(t)
+                    # relying on station names to not have bgcolor same as
+                    # train type legend
+                    onerow.append(t + bgcolor.get(th.get('bgcolor', None), ''))
 
+            # arrival and departure times
             tds = 0
             reset_am = True
             for td in tr('td'):
