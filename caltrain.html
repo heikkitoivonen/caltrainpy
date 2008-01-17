@@ -7,9 +7,12 @@ body, html {
   margin: 0;
 }
 
-th {
-  /* For dir button, probably needs class/id. */
-  text-align:right;
+#topright {
+  text-align: right;
+}
+
+#topleft {
+  text-align: left;
 }
 
 #from {border-left: solid 1px black;}
@@ -33,6 +36,8 @@ table {
 }
 
 tbody > tr:hover {background-color: lightgrey;}
+
+option {font-size: x-small;}
 </style>
 
 <!-- var timetables = eval(json schedule); -->
@@ -62,7 +67,7 @@ for i, table in enumerate(timetables):
 <body>
 <table>
 <thead>
-<tr><th><button id="day">Mon-Fri</button></th><th></th><th><button id="direction">Northbound</button></th></tr>
+<tr><th colspan="2" id="topleft"><button id="day">Mon-Fri</button></th><th id="topright"><button id="direction">Northbound</button></th></tr>
 <tr><th id="train">Train</th><th class="schedulehead"><select id="from">
 <option>Gilroy</option>
 <option>San Antonio</option>
