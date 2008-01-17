@@ -32,54 +32,121 @@ td.time {border-left: solid 1px black;}
 
 table {
   border-collapse: collapse;
-  margin: 2px;
+  margin: 1px;
 }
 
 tbody > tr:hover {background-color: lightgrey;}
 
 select, option {font-size: x-small;}
-th,td {font-size: small;}
+th, td {font-size: small;}
 </style>
 
 <!-- var timetables = eval(json schedule); -->
 <script src="schedule.js" type="text/javascript"></script>
+
 <script type="text/javascript">
-/*
-for i, table in enumerate(timetables):
-    stations = []
-    timetable = {}
-    station = ''
+var weekday = "Mon-Fri";
+var weekend = "Weekend";
+var northbound = "Northbound";
+var southbound = "Southbound";
 
-    for row in table:
-        station = row[0]
-        if row[0] != 'Train No.':
-            stations.append(station)
-        timetable[station] = row[1:]
-
+function swapButtonValue(id, val1, val2) {
+    var node = document.getElementById(id).childNodes[0];
     
-    print tt[i], str(timetable).replace('], ', '],\n')
-    print
-    print ss[i], stations
-    print
-*/
+    if (node.nodeValue == val1) {
+		node.nodeValue = val2;
+	} else {
+		node.nodeValue = val1;
+	}
+	
+	updateStations();
+
+	updateSchedule();
+}
+
+function updateStations() {
+	// Get state
+	// Rebuild stations
+	// Set old stations if possible 
+}
+
+function updateSchedule() {
+	// Clear schedule
+	document.getElementById("table").removeChild(document.getElementById("schedule"));
+	
+	// Get state
+	var fromNode = document.getElementById("from");
+	var fromStation = fromNode.options[fromNode.selectedIndex].value;
+	var toNode = document.getElementById("to");
+	var toStation = toNode.options[toNode.selectedIndex].value;
+	var day = document.getElementById("day").childNodes[0].nodeValue;
+	var direction = document.getElementById("direction").childNodes[0].nodeValue;
+
+	// Select table
+	var table;
+	if (day == weekday) {
+		if (direction == northbound) {
+			table = timetables[1];		
+		} else {
+			table = timetables[2];		
+		} 
+	} else {
+		if (direction == northbound) {
+			table = timetables[3];		
+		} else {
+			table = timetables[4];		
+		} 
+	}
+	
+	// Get trains, departure times and arrival times
+	var trains = table[0]; // start from 1, 1st is "Train No."
+	var fromTimes, toTimes;
+	for (var i in table) {
+		var station = table[i][0];
+		if (station == fromStation) {
+			fromTimes = table[i];
+		} else if (station == toStation) {
+			toTimes = table[i];
+		}
+		if (fromTimes != undefined && toTimes != undefined) {
+			break;
+		}
+	}
+
+	// Rebuild schedule
+
+	// select next train in schedule
+	//var date = new Date();
+	//var hour = date.getHours();
+	//var min = date.getMinutes();
+}
+
+function onResize() {
+	// once the schedule is in fixed size with scrollbar, need to respond to resize
+}
+
+function onLoad() {
+	// update and resize
+}
 </script>
 </head>
 
-<body>
-<table>
-<thead>
-<tr><th colspan="2" id="topleft"><button id="day">Mon-Fri</button></th><th id="topright"><button id="direction">Northbound</button></th></tr>
-<tr><th id="train">Train</th><th class="schedulehead"><select id="from">
+<body onload="onLoad();" onresize="onResize();">
+<table id="table">
+<thead id="thead">
+<tr><th colspan="2" id="topleft"><button id="day" onclick="swapButtonValue('day', weekday, weekend);">Mon-Fri</button></th><th id="topright"><button id="direction" onclick="swapButtonValue('direction', northbound, southbound);">Northbound</button></th></tr>
+<tr><th id="train">Train</th><th class="schedulehead"><select id="from" onchange="updateSchedule();">
 <option>Gilroy</option>
 <option>San Antonio</option>
 <option>San Francisco</option>
-</select></th><th class="schedulehead"><select id="to">
+</select></th><th class="schedulehead"><select id="to" onchange="updateSchedule();">
 <option>San Francisco</option>
 <option>San Antonio</option>
 <option>Gilroy</option>
 </select>
 </th><tr>
 </thead>
+
 <tbody id="schedule">
 <tr><td>101</td><td class="time">6:00 A</td><td class="time">6:01 A</td></tr>
 <tr><td>102</td><td class="time">7:00 A</td><td class="time">8:01 A</td></tr>
