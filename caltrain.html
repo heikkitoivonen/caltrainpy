@@ -1,0 +1,91 @@
+<html>
+<head>
+<title>CaltrainJS</title>
+<style type="text/css">
+body, html {
+  /* Since we are intended for small displays, remove all unnecessary space around */
+  margin: 0;
+}
+
+th {
+  /* For dir button, probably needs class/id. */
+  text-align:right;
+}
+
+#from {border-left: solid 1px black;}
+
+#to {border-left: solid 1px black;}
+
+#train {
+  text-align: left;
+  border-bottom: solid 1px black; /* Same as in .schedulehead */
+}
+th.schedulehead {
+  border-bottom: solid 1px black;
+  border-left: solid 1px black;
+}
+
+td.time {border-left: solid 1px black;}
+
+table {
+  border-collapse: collapse;
+  margin: 2px;
+}
+
+tbody > tr:hover {background-color: lightgrey;}
+</style>
+
+<!-- var timetables = eval(json schedule); -->
+<script src="schedule.js" type="text/javascript"></script>
+<script type="text/javascript">
+/*
+for i, table in enumerate(timetables):
+    stations = []
+    timetable = {}
+    station = ''
+
+    for row in table:
+        station = row[0]
+        if row[0] != 'Train No.':
+            stations.append(station)
+        timetable[station] = row[1:]
+
+    
+    print tt[i], str(timetable).replace('], ', '],\n')
+    print
+    print ss[i], stations
+    print
+*/
+</script>
+</head>
+
+<body>
+<table>
+<thead>
+<tr><th><button id="day">Mon-Fri</button></th><th></th><th><button id="direction">Northbound</button></th></tr>
+<tr><th id="train">Train</th><th class="schedulehead"><select id="from">
+<option>Gilroy</option>
+<option>San Antonio</option>
+<option>San Francisco</option>
+</select></th><th class="schedulehead"><select id="to">
+<option>San Francisco</option>
+<option>San Antonio</option>
+<option>Gilroy</option>
+</select>
+</th><tr>
+</thead>
+<tbody id="schedule">
+<tr><td>101</td><td class="time">6:00 AM</td><td class="time">6:01 AM</td></tr>
+<tr><td>102</td><td class="time">7:00 AM</td><td class="time">8:01 AM</td></tr>
+<tr><td>103(b)</td><td class="time">8:00 AM</td><td class="time">9:01 AM</td></tr>
+<tr><td>104(x)</td><td class="time">9:00 AM</td><td class="time">10:01 AM</td></tr>
+<tr><td>105</td><td class="time">10:00 AM</td><td class="time">11:01 AM</td></tr>
+<tr><td>106</td><td class="time">11:00 AM</td><td class="time">12:01 PM</td></tr>
+<tr><td>107</td><td class="time">12:00 PM</td><td class="time">1:01 PM</td></tr>
+<tr><td>108</td><td class="time">1:00 PM</td><td class="time">2:01 PM</td></tr>
+<tr><td>109</td><td class="time">2:00 PM</td><td class="time">3:01 PM</td></tr>
+<tr><td>111</td><td class="time">3:00 PM</td><td class="time">4:01 PM</td></tr>
+</tbody>
+</table>
+</body>
+</html>
