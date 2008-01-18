@@ -44,6 +44,7 @@ body, html {
   border-bottom: solid 1px black; /* Same as in .schedulehead */
   background-color: pink;
 }
+
 th.schedulehead {
   border-bottom: solid 1px black;
   border-left: solid 1px black;
@@ -86,29 +87,7 @@ function swapButtonValue(id, val1, val2) {
 	updateSchedule();
 }
 
-function updateStations(swapStations) {
-	// Get state
-	// XXX refactor
-	var fromNode = document.getElementById("from");
-	var fromStation = fromNode.options[fromNode.selectedIndex].text;
-	var toNode = document.getElementById("to");
-	var toStation = toNode.options[toNode.selectedIndex].text;
-	var day = document.getElementById("day").childNodes[0].nodeValue;
-	var direction = document.getElementById("direction").childNodes[0].nodeValue;
-	
-	if (swapStations == true) {
-		temp = fromStation;
-		fromStation = toStation;
-		toStation = temp;
-	}
-	
-	// Rebuild stations
-	// Empty lists
-	fromNode.options.length = 0;
-	toNode.options.length = 0;
-
-	// Select table
-	// XXX refactor	
+function getTable(day, direction) {
 	var table;
 	if (day == weekday) {
 		if (direction == northbound) {
@@ -123,6 +102,34 @@ function updateStations(swapStations) {
 			table = timetables[3];		
 		} 
 	}
+	return table;
+}
+
+function updateStations(swapStations) {
+	// Get state
+	// XXX refactor
+	var fromNode = document.getElementById("from");
+	var fromStation = fromNode.options[fromNode.selectedIndex].text;
+	var toNode = document.getElementById("to");
+	var toStation = toNode.options[toNode.selectedIndex].text;
+	var day = document.getElementById("day").childNodes[0].nodeValue;
+	var direction = document.getElementById("direction").childNodes[0].nodeValue;
+	
+	// This makes it so that when switching direction, we swap the column
+	// order (the departure station will always be first).
+	if (swapStations == true) {
+		temp = fromStation;
+		fromStation = toStation;
+		toStation = temp;
+	}
+	
+	// Rebuild stations
+	// Empty lists
+	fromNode.options.length = 0;
+	toNode.options.length = 0;
+
+	// Select table
+	var table = getTable(day, direction);
 	
 	// Rebuild lists
 	var i=1; // 1st is "Train No."
@@ -162,6 +169,7 @@ function updateSchedule() {
 	tableNode.removeChild(document.getElementById("schedule"));
 	
 	// Get state
+	// XXX refactor
 	var fromNode = document.getElementById("from");
 	var fromStation = fromNode.options[fromNode.selectedIndex].text;
 	var toNode = document.getElementById("to");
@@ -170,20 +178,7 @@ function updateSchedule() {
 	var direction = document.getElementById("direction").childNodes[0].nodeValue;
 
 	// Select table
-	var table;
-	if (day == weekday) {
-		if (direction == northbound) {
-			table = timetables[0];		
-		} else {
-			table = timetables[1];		
-		} 
-	} else {
-		if (direction == northbound) {
-			table = timetables[2];		
-		} else {
-			table = timetables[3];		
-		} 
-	}
+	var table = getTable(day, direction);
 	
 	// Get trains, departure times and arrival times
 	var trains = table[0]; // start from 1, 1st is "Train No."
