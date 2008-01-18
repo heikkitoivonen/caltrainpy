@@ -42,10 +42,12 @@ body, html {
 #train {
   text-align: left;
   border-bottom: solid 1px black; /* Same as in .schedulehead */
+  background-color: pink;
 }
 th.schedulehead {
   border-bottom: solid 1px black;
   border-left: solid 1px black;
+  background-color: pink;
 }
 
 td.time {border-left: solid 1px black;}
@@ -79,12 +81,12 @@ function swapButtonValue(id, val1, val2) {
 		node.nodeValue = val1;
 	}
 	
-	updateStations();
+	updateStations(true);
 
 	updateSchedule();
 }
 
-function updateStations() {
+function updateStations(swapStations) {
 	// Get state
 	// XXX refactor
 	var fromNode = document.getElementById("from");
@@ -93,6 +95,12 @@ function updateStations() {
 	var toStation = toNode.options[toNode.selectedIndex].text;
 	var day = document.getElementById("day").childNodes[0].nodeValue;
 	var direction = document.getElementById("direction").childNodes[0].nodeValue;
+	
+	if (swapStations == true) {
+		temp = fromStation;
+		fromStation = toStation;
+		toStation = temp;
+	}
 	
 	// Rebuild stations
 	// Empty lists
@@ -226,7 +234,7 @@ function onResize() {
 }
 
 function onLoad() {
-	updateStations();
+	updateStations(false);
 	
 	updateSchedule();
 
