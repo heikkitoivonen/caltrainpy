@@ -65,15 +65,17 @@ tbody > tr:hover {background-color: lightgrey;}
 
 select, option {font-size: x-small;}
 th, td {font-size: small;}
-td {height: 1em;}
 
 /* Now the tricky stuff, getting vertical scrollbar for times */
+/* This works pretty good in Firefox, but in IE cells become too high,
+   and there is no scrollbar.
 #schedule {
   clear: both;
   height: 270px; /* + 50px thead = 320px */
   overflow: auto;
   overflow-x: hidden;
 }
+*/
 </style>
 
 <!-- var timetables = eval(json schedule); -->
@@ -249,13 +251,19 @@ function onLoad() {
 
 	// XXX resize?
 }
+
+function about(event) {
+	alert("CaltrainJS 0.2\n(C) Heikki Toivonen 2008");
+	event.preventDefault();
+}
 </script>
 </head>
 
 <body onload="onLoad();" onresize="onResize();">
 <table id="table">
 <thead id="thead">
-<tr><th colspan="2" id="topleft"><button id="day" onclick="swapButtonValue('day', weekday, weekend);">Mon-Fri</button></th><th id="topright"><button id="direction" onclick="swapButtonValue('direction', northbound, southbound);">Northbound</button></th></tr>
+<tr><th colspan="2" id="topleft"><button id="day" onclick="swapButtonValue('day', weekday, weekend);">Mon-Fri</button>
+<a href="/" onclick="about(event);">About</a></th><th id="topright"><button id="direction" onclick="swapButtonValue('direction', northbound, southbound);">Northbound</button></th></tr>
 <tr><th id="train">Train</th><th class="schedulehead"><select id="from" onchange="updateSchedule();">
 <option>Gilroy</option>
 </select></th><th class="schedulehead"><select id="to" onchange="updateSchedule();">
