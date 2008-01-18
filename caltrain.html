@@ -88,9 +88,9 @@ function updateStations() {
 	// Get state
 	// XXX refactor
 	var fromNode = document.getElementById("from");
-	var fromStation = fromNode.options[fromNode.selectedIndex].value;
+	var fromStation = fromNode.options[fromNode.selectedIndex].text;
 	var toNode = document.getElementById("to");
-	var toStation = toNode.options[toNode.selectedIndex].value;
+	var toStation = toNode.options[toNode.selectedIndex].text;
 	var day = document.getElementById("day").childNodes[0].nodeValue;
 	var direction = document.getElementById("direction").childNodes[0].nodeValue;
 	
@@ -155,9 +155,9 @@ function updateSchedule() {
 	
 	// Get state
 	var fromNode = document.getElementById("from");
-	var fromStation = fromNode.options[fromNode.selectedIndex].value;
+	var fromStation = fromNode.options[fromNode.selectedIndex].text;
 	var toNode = document.getElementById("to");
-	var toStation = toNode.options[toNode.selectedIndex].value;
+	var toStation = toNode.options[toNode.selectedIndex].text;
 	var day = document.getElementById("day").childNodes[0].nodeValue;
 	var direction = document.getElementById("direction").childNodes[0].nodeValue;
 
@@ -202,11 +202,15 @@ function updateSchedule() {
 		trainNode.appendChild(document.createTextNode(trains[i]));
 
 		fromNode = tr.insertCell(-1);
-		//fromNode.appendChild(document.createTextNode(fromTimes[i]));
+		departureTime = fromTimes[i];
+		departureTime = departureTime.substring(0, departureTime.length - 1); // cut 'M'
+		fromNode.appendChild(document.createTextNode(departureTime));
 		fromNode.className = "time";
 		
 		toNode = tr.insertCell(-1);
-		//toNode.appendChild(document.createTextNode(toTimes[i]));
+		arrivalTime = toTimes[i];
+		arrivalTime = arrivalTime.substring(0, arrivalTime.length - 1); // cut 'M'
+		toNode.appendChild(document.createTextNode(arrivalTime));
 		toNode.className = "time";
 	}
 	tableNode.appendChild(scheduleNode);
@@ -244,16 +248,6 @@ function onLoad() {
 </thead>
 
 <tbody id="schedule">
-<tr><td>101</td><td class="time">6:00 A</td><td class="time">6:01 A</td></tr>
-<tr><td>102</td><td class="time">7:00 A</td><td class="time">8:01 A</td></tr>
-<tr><td>103(b)</td><td class="time">8:00 A</td><td class="time">9:01 A</td></tr>
-<tr><td>104(x)</td><td class="time">9:00 A</td><td class="time">10:01 A</td></tr>
-<tr><td>105</td><td class="time">10:00 A</td><td class="time">11:01 A</td></tr>
-<tr><td>106</td><td class="time">11:00 A</td><td class="time">12:01 P</td></tr>
-<tr><td>107</td><td class="time">12:00 P</td><td class="time">1:01 P</td></tr>
-<tr><td>108</td><td class="time">1:00 P</td><td class="time">2:01 P</td></tr>
-<tr><td>109</td><td class="time">2:00 P</td><td class="time">3:01 P</td></tr>
-<tr><td>111</td><td class="time">3:00 P</td><td class="time">4:01 P</td></tr>
 </tbody>
 </table>
 </body>
