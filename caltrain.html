@@ -88,12 +88,12 @@ var northbound = "Northbound";
 var southbound = "Southbound";
 
 function swapButtonValue(id, val1, val2) {
-    var node = document.getElementById(id).childNodes[0];
+    var node = document.getElementById(id);
     
-    if (node.nodeValue == val1) {
-		node.nodeValue = val2;
+    if (node.value == val1) {
+		node.value = val2;
 	} else {
-		node.nodeValue = val1;
+		node.value = val1;
 	}
 	
 	updateStations(id == "direction"); // Swap on direction change
@@ -126,8 +126,8 @@ function updateStations(swapStations) {
 	var fromStation = fromNode.options[fromNode.selectedIndex].text;
 	var toNode = document.getElementById("to");
 	var toStation = toNode.options[toNode.selectedIndex].text;
-	var day = document.getElementById("day").childNodes[0].nodeValue;
-	var direction = document.getElementById("direction").childNodes[0].nodeValue;
+	var day = document.getElementById("day").value;
+	var direction = document.getElementById("direction").value;
 	
 	// This makes it so that when switching direction, we swap the column
 	// order (the departure station will always be first).
@@ -188,8 +188,8 @@ function updateSchedule() {
 	var fromStation = fromNode.options[fromNode.selectedIndex].text;
 	var toNode = document.getElementById("to");
 	var toStation = toNode.options[toNode.selectedIndex].text;
-	var day = document.getElementById("day").childNodes[0].nodeValue;
-	var direction = document.getElementById("direction").childNodes[0].nodeValue;
+	var day = document.getElementById("day").value;
+	var direction = document.getElementById("direction").value;
 
 	// Select table
 	var table = getTable(day, direction);
@@ -253,7 +253,7 @@ function onLoad() {
 }
 
 function about(event) {
-	alert("CaltrainJS 0.2\n(C) Heikki Toivonen 2008");
+	alert("CaltrainJS 0.2.1\n(C) Heikki Toivonen 2008");
 	event.preventDefault();
 }
 </script>
@@ -262,8 +262,8 @@ function about(event) {
 <body onload="onLoad();" onresize="onResize();">
 <table id="table">
 <thead id="thead">
-<tr><th colspan="2" id="topleft"><button id="day" onclick="swapButtonValue('day', weekday, weekend);">Mon-Fri</button>
-<a href="/" onclick="about(event);">About</a></th><th id="topright"><button id="direction" onclick="swapButtonValue('direction', northbound, southbound);">Northbound</button></th></tr>
+<tr><th colspan="2" id="topleft"><input id="day" onclick="swapButtonValue('day', weekday, weekend);" value="Mon-Fri" type="button"></input>
+<a href="/" onclick="about(event);">About</a></th><th id="topright"><input type="button" id="direction" onclick="swapButtonValue('direction', northbound, southbound);" value="Northbound"></input></th></tr>
 <tr><th id="train">Train</th><th class="schedulehead"><select id="from" onchange="updateSchedule();">
 <option>Gilroy</option>
 </select></th><th class="schedulehead"><select id="to" onchange="updateSchedule();">
