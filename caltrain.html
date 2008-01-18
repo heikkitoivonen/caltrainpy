@@ -23,6 +23,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -->
+
 <head>
 <title>CaltrainJS</title>
 <style type="text/css">
@@ -82,7 +83,7 @@ function swapButtonValue(id, val1, val2) {
 		node.nodeValue = val1;
 	}
 	
-	updateStations(true);
+	updateStations(id == "direction"); // Swap on direction change
 
 	updateSchedule();
 }
