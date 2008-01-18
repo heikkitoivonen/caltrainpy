@@ -104,15 +104,15 @@ function updateStations() {
 	var table;
 	if (day == weekday) {
 		if (direction == northbound) {
-			table = timetables[1];		
+			table = timetables[0];		
 		} else {
-			table = timetables[2];		
+			table = timetables[1];		
 		} 
 	} else {
 		if (direction == northbound) {
-			table = timetables[3];		
+			table = timetables[2];		
 		} else {
-			table = timetables[4];		
+			table = timetables[3];		
 		} 
 	}
 	
@@ -165,15 +165,15 @@ function updateSchedule() {
 	var table;
 	if (day == weekday) {
 		if (direction == northbound) {
-			table = timetables[1];		
+			table = timetables[0];		
 		} else {
-			table = timetables[2];		
+			table = timetables[1];		
 		} 
 	} else {
 		if (direction == northbound) {
-			table = timetables[3];		
+			table = timetables[2];		
 		} else {
-			table = timetables[4];		
+			table = timetables[3];		
 		} 
 	}
 	
