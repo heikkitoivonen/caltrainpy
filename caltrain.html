@@ -34,10 +34,12 @@ body, html {
 
 #topright {
   text-align: right;
+  padding-right: 0;
 }
 
 #topleft {
   text-align: left;
+  padding-left: 0;
 }
 
 #train {
@@ -63,6 +65,14 @@ tbody > tr:hover {background-color: lightgrey;}
 
 select, option {font-size: x-small;}
 th, td {font-size: small;}
+
+/* Now the tricky stuff, getting vertical scrollbar for times */
+#schedule {
+  clear: both;
+  height: 270px; /* + 50px thead = 320px */
+  overflow: auto;
+  overflow-x: hidden;
+}
 </style>
 
 <!-- var timetables = eval(json schedule); -->
