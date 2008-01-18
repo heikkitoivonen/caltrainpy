@@ -206,6 +206,9 @@ function updateSchedule() {
 		}
 	}	
 
+	// IE requires this to be in the table, or insertRow etc. won't work
+	tableNode.appendChild(scheduleNode);
+	
 	// Rebuild schedule
 	i = 1; // 1st is station name or "Train No."
 	var count = trains.length;
@@ -227,7 +230,6 @@ function updateSchedule() {
 		toNode.appendChild(document.createTextNode(arrivalTime));
 		toNode.className = "time";
 	}
-	tableNode.appendChild(scheduleNode);
 
 	// select next train in schedule
 	//var date = new Date();
