@@ -86,13 +86,72 @@ function swapButtonValue(id, val1, val2) {
 
 function updateStations() {
 	// Get state
+	// XXX refactor
+	var fromNode = document.getElementById("from");
+	var fromStation = fromNode.options[fromNode.selectedIndex].value;
+	var toNode = document.getElementById("to");
+	var toStation = toNode.options[toNode.selectedIndex].value;
+	var day = document.getElementById("day").childNodes[0].nodeValue;
+	var direction = document.getElementById("direction").childNodes[0].nodeValue;
+	
 	// Rebuild stations
-	// Set old stations if possible 
+	// Empty lists
+	fromNode.options.length = 0;
+	toNode.options.length = 0;
+
+	// Select table
+	// XXX refactor	
+	var table;
+	if (day == weekday) {
+		if (direction == northbound) {
+			table = timetables[1];		
+		} else {
+			table = timetables[2];		
+		} 
+	} else {
+		if (direction == northbound) {
+			table = timetables[3];		
+		} else {
+			table = timetables[4];		
+		} 
+	}
+	
+	// Rebuild lists
+	var i=1; // 1st is "Train No."
+	var count = table.length;
+	var station, fromSelected = -1, toSelected = -1;
+	for (; i < count; i++) {
+		station = table[i][0];
+
+		if (station == fromStation) {
+			fromSelected = i - 1;
+		}
+		fromNode.options[i - 1] = new Option(station, "");
+		
+		if (station == toStation) {
+			toSelected = count - i - 1;
+		}
+		toNode.options[count - i - 1] = new Option(station, "");
+	}
+	
+	// Try to select what we used to have
+	if (fromSelected >= 0) {
+		fromNode.selectedIndex = fromSelected;
+	} else {
+		fromNode.selectedIndex = 0;
+	}
+	if (toSelected >= 0) {
+		toNode.selectedIndex = toSelected;
+	} else {
+		toNode.selectedIndex = toNode.options.length - 1;
+	}
 }
 
 function updateSchedule() {
 	// Clear schedule
-	document.getElementById("table").removeChild(document.getElementById("schedule"));
+	var scheduleNode = document.getElementById("schedule").cloneNode(false);
+	var tableNode = document.getElementById("table")
+	tableNode.removeChild(document.getElementById("schedule"));
 	
 	// Get state
 	var fromNode = document.getElementById("from");
@@ -131,9 +190,26 @@ function updateSchedule() {
 		if (fromTimes != undefined && toTimes != undefined) {
 			break;
 		}
-	}
+	}	
 
 	// Rebuild schedule
+	i = 1; // 1st is station name or "Train No."
+	var count = trains.length;
+	for (; i < count; i++) {
+		var tr = scheduleNode.insertRow(-1);
+		
+		trainNode = tr.insertCell(-1);
+		trainNode.appendChild(document.createTextNode(trains[i]));
+
+		fromNode = tr.insertCell(-1);
+		//fromNode.appendChild(document.createTextNode(fromTimes[i]));
+		fromNode.className = "time";
+		
+		toNode = tr.insertCell(-1);
+		//toNode.appendChild(document.createTextNode(toTimes[i]));
+		toNode.className = "time";
+	}
+	tableNode.appendChild(scheduleNode);
 
 	// select next train in schedule
 	//var date = new Date();
@@ -146,7 +222,11 @@ function onResize() {
 }
 
 function onLoad() {
-	// update and resize
+	updateStations();
+	
+	updateSchedule();
+
+	// XXX resize?
 }
 </script>
 </head>
@@ -157,12 +237,8 @@ function onLoad() {
 <tr><th colspan="2" id="topleft"><button id="day" onclick="swapButtonValue('day', weekday, weekend);">Mon-Fri</button></th><th id="topright"><button id="direction" onclick="swapButtonValue('direction', northbound, southbound);">Northbound</button></th></tr>
 <tr><th id="train">Train</th><th class="schedulehead"><select id="from" onchange="updateSchedule();">
 <option>Gilroy</option>
-<option>San Antonio</option>
-<option>San Francisco</option>
 </select></th><th class="schedulehead"><select id="to" onchange="updateSchedule();">
 <option>San Francisco</option>
-<option>San Antonio</option>
-<option>Gilroy</option>
 </select>
 </th><tr>
 </thead>
