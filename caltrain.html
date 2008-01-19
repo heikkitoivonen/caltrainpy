@@ -180,8 +180,10 @@ function updateStations(swapStations) {
         }
     }
     if (use_innerHTML == true) {
-        fromNode.innerHTML = fromOptions; // XXX doesn't quite work, IE Mobile does not update .options.length
-        toNode.innerHTMML = toOptions;
+        fromNode.parentNode.innerHTML = '<select id="from" onchange="updateSchedule();">' + fromOptions + '</select>';
+        toNode.parentNode.innerHTML = '<select id="to" onchange="updateSchedule();">' + toOptions + '</select>';
+        fromNode = document.getElementById("from");
+        toNode = document.getElementById("to");
     }
 
     // Try to select what we used to have
