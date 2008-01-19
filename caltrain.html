@@ -204,7 +204,6 @@ function updateSchedule() {
     var scheduleNode = document.getElementById("schedule");
     var tableNode = document.getElementById("table");
     try {
-        throw "foo";
         scheduleNode = scheduleNode.cloneNode(false);
         tableNode.removeChild(document.getElementById("schedule"));
         // IE requires this to be in the table, or insertRow etc. won't work
