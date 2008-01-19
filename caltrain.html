@@ -201,9 +201,21 @@ function updateStations(swapStations) {
 
 function updateSchedule() {
     // Clear schedule
-    var scheduleNode = document.getElementById("schedule").cloneNode(false);
-    var tableNode = document.getElementById("table")
-    tableNode.removeChild(document.getElementById("schedule"));
+    var scheduleNode = document.getElementById("schedule");
+    var tableNode = document.getElementById("table");
+    try {
+        throw "foo";
+        scheduleNode = scheduleNode.cloneNode(false);
+        tableNode.removeChild(document.getElementById("schedule"));
+        // IE requires this to be in the table, or insertRow etc. won't work
+        tableNode.appendChild(scheduleNode);
+    } catch(err) {
+        // cloneNode not support by IE Mobile
+        var i, count = scheduleNode.childNodes.length;
+        for (i = count - 1; i >= 0; i--) {
+            scheduleNode.removeChild(scheduleNode.childNodes[i]);
+        }
+     }
 
     // Get state
     // XXX refactor
@@ -232,9 +244,6 @@ function updateSchedule() {
         }
     }
 
-    // IE requires this to be in the table, or insertRow etc. won't work
-    tableNode.appendChild(scheduleNode);
-
     // Rebuild schedule
     i = 1; // 1st is station name or "Train No."
     var count = trains.length;
@@ -242,18 +251,21 @@ function updateSchedule() {
         var tr = scheduleNode.insertRow(-1);
 
         trainNode = tr.insertCell(-1);
-        trainNode.appendChild(document.createTextNode(trains[i]));
+        //trainNode.appendChild(document.createTextNode(trains[i]));
+        trainNode.innerHTML = trains[i];
 
         fromNode = tr.insertCell(-1);
         departureTime = fromTimes[i];
         departureTime = departureTime.substring(0, departureTime.length - 1); // cut 'M'
-        fromNode.appendChild(document.createTextNode(departureTime));
+        //fromNode.appendChild(document.createTextNode(departureTime));
+        fromNode.innerHTML = departureTime;
         fromNode.className = "time";
 
         toNode = tr.insertCell(-1);
         arrivalTime = toTimes[i];
         arrivalTime = arrivalTime.substring(0, arrivalTime.length - 1); // cut 'M'
-        toNode.appendChild(document.createTextNode(arrivalTime));
+        //toNode.appendChild(document.createTextNode(arrivalTime));
+        toNode.innerHTML = arrivalTime;
         toNode.className = "time";
     }
 
