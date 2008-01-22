@@ -3,7 +3,7 @@
 <!--
 The MIT License
 
-Copyright (c) 2008 Heikki Toivonen
+Copyright (c) 2008 Heikki Toivonen <hjtoi@comcast.net>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -97,9 +97,7 @@ function swapButtonValue(id, val1, val2) {
         node.value = val1;
     }
 
-    updateStations(id == "direction"); // Swap on direction change
-
-    updateSchedule();
+    rewriteTable(id == "direction"); // Swap on direction change
 }
 
 function getTable(day, direction) {
@@ -120,9 +118,8 @@ function getTable(day, direction) {
     return table;
 }
 
-function updateStations(swapStations) {
+function rewriteTable(swapStations) {
     // Get state
-    // XXX refactor
     var fromNode = document.getElementById("from");
     var fromStation = fromNode.options[fromNode.selectedIndex].text;
     var toNode = document.getElementById("to");
@@ -137,22 +134,11 @@ function updateStations(swapStations) {
         fromStation = toStation;
         toStation = temp;
     }
-
-    // Rebuild stations
-    // Empty lists
-    var use_innerHTML = false;
-    try {
-        fromNode.options.length = 0;
-        toNode.options.length = 0;
-    } catch (err) {
-        // In IE Mobile length is readonly, we deal with this below
-        use_innerHTML = true;
-    }
-
-    // Select table
+    
+    // Select timetable
     var table = getTable(day, direction);
 
-    // Rebuild lists
+    // Rebuild select lists
     var i=1; // 1st is "Train No."
     var count = table.length;
     var station, fromSelected = -1, toSelected = -1;
@@ -164,114 +150,89 @@ function updateStations(swapStations) {
         if (station == fromStation) {
             fromSelected = i - 1;
         }
-        if (use_innerHTML == false) {
-            fromNode.options[i - 1] = new Option(station, "");
-        } else {
-            fromOptions = fromOptions + "<option>" + station + "</option>";
-        }
+        fromOptions = fromOptions + "<option>" + station + "</option>";
 
         if (station == toStation) {
             toSelected = count - i - 1;
         }
-        if (use_innerHTML == false) {        
-            toNode.options[count - i - 1] = new Option(station, "");
-        } else {
-            toOptions =  "<option>" + station + "</option>" + toOptions;
+        toOptions =  "<option>" + station + "</option>" + toOptions;
+    }
+    fromSelect = '<select id="from" onchange="rewriteTable(false);">' + fromOptions + '</select>';
+    toSelect = '<select id="to" onchange="rewriteTable(false);">' + toOptions + '</select>';
+
+    // Try to select what we used to have, may not be possible because of
+    // day change.
+    if (fromSelected < 0) {
+        fromSelected = 0;
+        fromStation = table[1][0];  // 1st is "Train No."
+    }
+    if (toSelected < 0) {
+        toSelected = 0;
+        toStation = table[count - 1][0];
+    }
+    
+    var schedules = "";
+    if (fromStation != toStation) { // If you selected same arrival and departure station, show no times.
+    
+        // Get trains, departure times and arrival times
+        var trains = table[0]; // start from 1, 1st is "Train No."
+        var fromTimes, toTimes;
+        for (i = 1; i < count; i++) {
+            var station = table[i][0];
+            if (station == fromStation) {
+                fromTimes = table[i];
+            } else if (station == toStation) {
+                toTimes = table[i];
+            }
+            if (fromTimes != undefined && toTimes != undefined) {
+                break;
+            }
+        }
+    
+        // Rebuild schedule
+        var count = trains.length;
+        for (i = 1; i < count; i++) { // 1st is station name or "Train No."
+            schedules += "<tr><td>" + trains[i] + "</td><td class='time'>";
+    
+            departureTime = fromTimes[i];
+            departureTime = departureTime.substring(0, departureTime.length - 1); // cut 'M'
+            schedules += departureTime + "</td><td class='time'>"; 
+    
+            arrivalTime = toTimes[i];
+            arrivalTime = arrivalTime.substring(0, arrivalTime.length - 1); // cut 'M'
+            schedules += arrivalTime + "</td></tr>"; 
         }
     }
-    if (use_innerHTML == true) {
-        fromNode.parentNode.innerHTML = '<select id="from" onchange="updateSchedule();">' + fromOptions + '</select>';
-        toNode.parentNode.innerHTML = '<select id="to" onchange="updateSchedule();">' + toOptions + '</select>';
-        fromNode = document.getElementById("from");
-        toNode = document.getElementById("to");
-    }
+    
+    // Write the table
+    writeTable(day, direction, fromSelect, toSelect, schedules);
 
-    // Try to select what we used to have
-    if (fromSelected >= 0) {
-        fromNode.selectedIndex = fromSelected;
-    } else {
-        fromNode.selectedIndex = 0;
-    }
-    if (toSelected >= 0) {
-        toNode.selectedIndex = toSelected;
-    } else {
-        toNode.selectedIndex = 0;
-    }
+    // Finally select for real
+    fromNode = document.getElementById("from");
+    toNode = document.getElementById("to");
+    fromNode.selectedIndex = fromSelected;
+    toNode.selectedIndex = toSelected;
 }
 
-function updateSchedule() {
-    // Clear schedule
-    var scheduleNode = document.getElementById("schedule");
-    var tableNode = document.getElementById("table");
-    try {
-        scheduleNode = scheduleNode.cloneNode(false);
-        tableNode.removeChild(document.getElementById("schedule"));
-        // IE requires this to be in the table, or insertRow etc. won't work
-        tableNode.appendChild(scheduleNode);
-    } catch(err) {
-        // cloneNode not support by IE Mobile
-        var i, count = scheduleNode.childNodes.length;
-        for (i = count - 1; i >= 0; i--) {
-            scheduleNode.removeChild(scheduleNode.childNodes[i]);
-        }
-     }
-
-    // Get state
-    // XXX refactor
-    var fromNode = document.getElementById("from");
-    var fromStation = fromNode.options[fromNode.selectedIndex].text;
-    var toNode = document.getElementById("to");
-    var toStation = toNode.options[toNode.selectedIndex].text;
-    var day = document.getElementById("day").value;
-    var direction = document.getElementById("direction").value;
-
-    // Select table
-    var table = getTable(day, direction);
-
-    // Get trains, departure times and arrival times
-    var trains = table[0]; // start from 1, 1st is "Train No."
-    var fromTimes, toTimes;
-    for (var i in table) {
-        var station = table[i][0];
-        if (station == fromStation) {
-            fromTimes = table[i];
-        } else if (station == toStation) {
-            toTimes = table[i];
-        }
-        if (fromTimes != undefined && toTimes != undefined) {
-            break;
-        }
-    }
-
-    // Rebuild schedule
-    i = 1; // 1st is station name or "Train No."
-    var count = trains.length;
-    for (; i < count; i++) {
-        var tr = scheduleNode.insertRow(-1);
-
-        trainNode = tr.insertCell(-1);
-        //trainNode.appendChild(document.createTextNode(trains[i]));
-        trainNode.innerHTML = trains[i];
-
-        fromNode = tr.insertCell(-1);
-        departureTime = fromTimes[i];
-        departureTime = departureTime.substring(0, departureTime.length - 1); // cut 'M'
-        //fromNode.appendChild(document.createTextNode(departureTime));
-        fromNode.innerHTML = departureTime;
-        fromNode.className = "time";
-
-        toNode = tr.insertCell(-1);
-        arrivalTime = toTimes[i];
-        arrivalTime = arrivalTime.substring(0, arrivalTime.length - 1); // cut 'M'
-        //toNode.appendChild(document.createTextNode(arrivalTime));
-        toNode.innerHTML = arrivalTime;
-        toNode.className = "time";
-    }
-
-    // select next train in schedule
-    //var date = new Date();
-    //var hour = date.getHours();
-    //var min = date.getMinutes();
+function writeTable(day, direction, fromSelect, toSelect, schedules) {
+    // Write the table. This is pretty yucky, but Internet Explorer Mobile
+    // in WM5 and WM6 does not allow us the modify table via DOM, and the
+    // only way seems to be to write the whole table at once.
+    document.getElementById("body").innerHTML = '\
+<table id="table"> \
+<thead id="thead"> \
+<tr><th colspan="2" id="topleft"><input id="day" onclick="swapButtonValue(\'day\', weekday, weekend);" value="' + 
+  day + '" type="button"></input> \
+<a href="/" onclick="about(event);">About</a></th><th id="topright"><input type="button" id="direction" onclick="swapButtonValue(\'direction\', northbound, southbound);" value="' + 
+  direction + '"></input></th></tr> \
+<tr><th id="train">Train</th><th class="schedulehead">' +
+  fromSelect + '</th><th class="schedulehead">' + toSelect + '\
+</th><tr> \
+</thead> \
+ \
+<tbody id="schedule">' + schedules + ' \
+</tbody> \
+</table>';    
 }
 
 function onResize() {
@@ -279,35 +240,27 @@ function onResize() {
 }
 
 function onLoad() {
-    updateStations(false);
-
-    updateSchedule();
+    // Initialize
+    writeTable(weekday,
+               northbound,
+               '<select id="from" onchange="rewriteTable(false);"><option>Gilroy</option></select>',
+               '<select id="to" onchange="rewriteTable(false);"><option>San Francisco</option></select>',
+               '');
+    
+    // Fill with real data
+    rewriteTable(false);
 
     // XXX resize?
 }
 
 function about(event) {
-    alert("CaltrainJS 0.2.1\n(C) Heikki Toivonen 2008");
+    alert("CaltrainJS 0.2.1\n(C) Heikki Toivonen 2008\nhjtoi@comcast.net");
     event.preventDefault();
 }
 </script>
 </head>
 
-<body onload="onLoad();" onresize="onResize();">
-<table id="table">
-<thead id="thead">
-<tr><th colspan="2" id="topleft"><input id="day" onclick="swapButtonValue('day', weekday, weekend);" value="Mon-Fri" type="button"></input>
-<a href="/" onclick="about(event);">About</a></th><th id="topright"><input type="button" id="direction" onclick="swapButtonValue('direction', northbound, southbound);" value="Northbound"></input></th></tr>
-<tr><th id="train">Train</th><th class="schedulehead"><select id="from" onchange="updateSchedule();">
-<option>Gilroy</option>
-</select></th><th class="schedulehead"><select id="to" onchange="updateSchedule();">
-<option>San Francisco</option>
-</select>
-</th><tr>
-</thead>
-
-<tbody id="schedule">
-</tbody>
-</table>
+<body id="body" onload="onLoad();" onresize="onResize();">
+<noscript><p>Javascript required!</p></noscript>
 </body>
 </html>
