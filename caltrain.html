@@ -134,7 +134,7 @@ function rewriteTable(swapStations) {
         fromStation = toStation;
         toStation = temp;
     }
-    
+
     // Select timetable
     var table = getTable(day, direction);
 
@@ -170,10 +170,10 @@ function rewriteTable(swapStations) {
         toSelected = 0;
         toStation = table[count - 1][0];
     }
-    
+
     var schedules = "";
     if (fromStation != toStation) { // If you selected same arrival and departure station, show no times.
-    
+
         // Get trains, departure times and arrival times
         var trains = table[0]; // start from 1, 1st is "Train No."
         var fromTimes, toTimes;
@@ -188,22 +188,22 @@ function rewriteTable(swapStations) {
                 break;
             }
         }
-    
+
         // Rebuild schedule
         var count = trains.length;
         for (i = 1; i < count; i++) { // 1st is station name or "Train No."
             schedules += "<tr><td>" + trains[i] + "</td><td class='time'>";
-    
+
             departureTime = fromTimes[i];
             departureTime = departureTime.substring(0, departureTime.length - 1); // cut 'M'
-            schedules += departureTime + "</td><td class='time'>"; 
-    
+            schedules += departureTime + "</td><td class='time'>";
+
             arrivalTime = toTimes[i];
             arrivalTime = arrivalTime.substring(0, arrivalTime.length - 1); // cut 'M'
-            schedules += arrivalTime + "</td></tr>"; 
+            schedules += arrivalTime + "</td></tr>";
         }
     }
-    
+
     // Write the table
     writeTable(day, direction, fromSelect, toSelect, schedules);
 
@@ -212,6 +212,12 @@ function rewriteTable(swapStations) {
     toNode = document.getElementById("to");
     fromNode.selectedIndex = fromSelected;
     toNode.selectedIndex = toSelected;
+    
+    // Store values into cookies for later retrieval
+    createCookie("day", day, 365);
+    createCookie("direction", direction, 365);
+    createCookie("fromStation", fromStation, 365);
+    createCookie("toStation", toStation, 365);
 }
 
 function writeTable(day, direction, fromSelect, toSelect, schedules) {
@@ -221,9 +227,9 @@ function writeTable(day, direction, fromSelect, toSelect, schedules) {
     document.getElementById("body").innerHTML = '\
 <table id="table"> \
 <thead id="thead"> \
-<tr><th colspan="2" id="topleft"><input id="day" onclick="swapButtonValue(\'day\', weekday, weekend);" value="' + 
+<tr><th colspan="2" id="topleft"><input id="day" onclick="swapButtonValue(\'day\', weekday, weekend);" value="' +
   day + '" type="button"></input> \
-<a href="/" onclick="about(event);">About</a></th><th id="topright"><input type="button" id="direction" onclick="swapButtonValue(\'direction\', northbound, southbound);" value="' + 
+<a href="/" onclick="about(event);">About</a></th><th id="topright"><input type="button" id="direction" onclick="swapButtonValue(\'direction\', northbound, southbound);" value="' +
   direction + '"></input></th></tr> \
 <tr><th id="train">Train</th><th class="schedulehead">' +
   fromSelect + '</th><th class="schedulehead">' + toSelect + '\
@@ -232,21 +238,59 @@ function writeTable(day, direction, fromSelect, toSelect, schedules) {
  \
 <tbody id="schedule">' + schedules + ' \
 </tbody> \
-</table>';    
+</table>';
 }
 
 function onResize() {
     // once the schedule is in fixed size with scrollbar, need to respond to resize
 }
 
-function onLoad() {
-    // Initialize
-    writeTable(weekday,
-               northbound,
-               '<select id="from" onchange="rewriteTable(false);"><option>Gilroy</option></select>',
-               '<select id="to" onchange="rewriteTable(false);"><option>San Francisco</option></select>',
-               '');
+function createCookie(name, value, days) {
+    var cookieVal = name + "=" + value;
     
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days * 86400000)); // 1 day in ms
+        cookieVal = cookieVal + "; expires=" + date.toGMTString();
+    }
+
+    document.cookie = cookieVal;
+}
+
+function readCookie(name) {
+    var cookies = document.cookie.split("; ");
+    for(var i=0; i < cookies.length; i++) {
+        var nameValue = cookies[i].split("=");
+        if (unescape(nameValue[0]) == name) {
+            return unescape(nameValue[1]);
+        }
+    }
+    return null;
+}
+
+function onLoad() {
+    // Read previous settings, if any
+    // Need to read/store: day, direction, fromStation, toStation
+    var day = readCookie("day");
+    var direction = readCookie("direction");
+    var fromStation = readCookie("fromStation");
+    var toStation = readCookie("toStation");
+    // Sanity check values
+    if (day != weekday && day != weekend) {
+        day = weekday
+    }
+    if (direction != northbound && direction != southbound) {
+        direction = northbound;
+    }
+    // Don't need to sanity check from/toStation, because rewriteTable will do it
+    
+    // Initialize
+    writeTable(day,
+               direction,
+               '<select id="from" onchange="rewriteTable(false);"><option>' + fromStation + '</option></select>',
+               '<select id="to" onchange="rewriteTable(false);"><option>' + toStation + '</option></select>',
+               '');
+
     // Fill with real data
     rewriteTable(false);
 
@@ -254,7 +298,7 @@ function onLoad() {
 }
 
 function about(event) {
-    alert("CaltrainJS 0.2.1\n(C) Heikki Toivonen 2008\nhjtoi@comcast.net");
+    alert("CaltrainJS 0.2.2\n(C) Heikki Toivonen 2008\nhjtoi@comcast.net");
     event.preventDefault();
 }
 </script>
