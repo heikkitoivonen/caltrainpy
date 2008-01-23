@@ -3,7 +3,7 @@
 <!--
 The MIT License
 
-Copyright (c) 2008 Heikki Toivonen <hjtoi@comcast.net>
+Copyright (c) 2008 Heikki Toivonen <hjtoi at comcast dot net>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -52,6 +52,10 @@ th.schedulehead {
   border-bottom: solid 1px black;
   border-left: solid 1px black;
   background-color: pink;
+}
+
+th.narrow {
+    text-align: right;
 }
 
 td.time {border-left: solid 1px black;}
@@ -224,25 +228,35 @@ function writeTable(day, direction, fromSelect, toSelect, schedules) {
     // Write the table. This is pretty yucky, but Internet Explorer Mobile
     // in WM5 and WM6 does not allow us the modify table via DOM, and the
     // only way seems to be to write the whole table at once.
-    document.getElementById("body").innerHTML = '\
+    var t1 = '\
 <table id="table"> \
 <thead id="thead"> \
 <tr><th colspan="2" id="topleft"><input id="day" onclick="swapButtonValue(\'day\', weekday, weekend);" value="' +
   day + '" type="button"></input> \
 <a href="/" onclick="about(event);">About</a></th><th id="topright"><input type="button" id="direction" onclick="swapButtonValue(\'direction\', northbound, southbound);" value="' +
-  direction + '"></input></th></tr> \
-<tr><th id="train">Train</th><th class="schedulehead">' +
+  direction + '"></input></th></tr>';
+
+    if (screen.width < 360) { // Not completely accurate, but seems good enough
+        var t2 = '<tr><th class="narrow">From:</th><th colspan="2">' + fromSelect + '</th></tr>\
+<tr><th class="narrow">To:</th><th colspan="2">' + toSelect + '</th></tr>\
+<tr><th id="train">Train</th><th class="schedulehead">From</th><th class="schedulehead">To</th><tr>';
+    } else {
+        var t2 = '<tr><th id="train">Train</th><th class="schedulehead">' +
   fromSelect + '</th><th class="schedulehead">' + toSelect + '\
-</th><tr> \
-</thead> \
+</th><tr>';
+    }
+
+    var t3 = '</thead> \
  \
 <tbody id="schedule">' + schedules + ' \
 </tbody> \
 </table>';
+     
+    document.getElementById("body").innerHTML = t1 + t2 + t3;
 }
 
 function onResize() {
-    // once the schedule is in fixed size with scrollbar, need to respond to resize
+    rewriteTable(false);    
 }
 
 function createCookie(name, value, days) {
@@ -297,12 +311,10 @@ function onLoad() {
 
     // Fill with real data
     rewriteTable(false);
-
-    // XXX resize?
 }
 
 function about(event) {
-    alert("CaltrainJS 0.2.3\n(C) Heikki Toivonen 2008\nhjtoi at comcast dot net");
+    alert("CaltrainJS 0.2.4\n(C) Heikki Toivonen 2008\nhjtoi at comcast dot net");
     event.preventDefault();
 }
 </script>
