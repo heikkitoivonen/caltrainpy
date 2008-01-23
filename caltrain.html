@@ -270,19 +270,23 @@ function readCookie(name) {
 
 function onLoad() {
     // Read previous settings, if any
-    // Need to read/store: day, direction, fromStation, toStation
     var day = readCookie("day");
     var direction = readCookie("direction");
     var fromStation = readCookie("fromStation");
     var toStation = readCookie("toStation");
-    // Sanity check values
+    // Don't trust cookie values without checking
     if (day != weekday && day != weekend) {
         day = weekday
     }
     if (direction != northbound && direction != southbound) {
         direction = northbound;
     }
-    // Don't need to sanity check from/toStation, because rewriteTable will do it
+    if (fromStation.match(/[^a-zA-Z0-9 \.]/)) { // ensures no markup
+        fromStation = ""; // rewriteTable will pick the right value
+    }
+    if (toStation.match(/[^a-zA-Z0-9 \.]/)) { // ensures no markup
+        toStation = ""; // rewriteTable will pick the right value
+    }
     
     // Initialize
     writeTable(day,
@@ -298,7 +302,7 @@ function onLoad() {
 }
 
 function about(event) {
-    alert("CaltrainJS 0.2.2\n(C) Heikki Toivonen 2008\nhjtoi@comcast.net");
+    alert("CaltrainJS 0.2.3\n(C) Heikki Toivonen 2008\nhjtoi at comcast dot net");
     event.preventDefault();
 }
 </script>
