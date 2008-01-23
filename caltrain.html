@@ -295,10 +295,10 @@ function onLoad() {
     if (direction != northbound && direction != southbound) {
         direction = northbound;
     }
-    if (fromStation.match(/[^a-zA-Z0-9 \.]/)) { // ensures no markup
+    if (fromStation && fromStation.match(/[^a-zA-Z0-9 \.]/)) { // ensures no markup
         fromStation = ""; // rewriteTable will pick the right value
     }
-    if (toStation.match(/[^a-zA-Z0-9 \.]/)) { // ensures no markup
+    if (toStation && toStation.match(/[^a-zA-Z0-9 \.]/)) { // ensures no markup
         toStation = ""; // rewriteTable will pick the right value
     }
     
