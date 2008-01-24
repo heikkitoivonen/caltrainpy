@@ -2,7 +2,7 @@
 #
 # The MIT License
 #
-# Copyright (c) 2008 Heikki Toivonen
+# Copyright (c) 2008 Heikki Toivonen <hjtoi at comcast dot net>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@ setup(
     version = "0.2",
     description = "GUI and library for Caltrain schedules",
     author = "Heikki Toivonen",
-    author_email = "heikki@osafoundation.org",
+    author_email = "hjtoi at comcast dot net",
     license = "The MIT License",
     py_modules = ["caltrain"],
     #extras_require = {'JSON': ['python-jason >=3.4', 'BeautifulSoup >=3.0.4'],
