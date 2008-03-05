@@ -26,7 +26,7 @@ from distutils.core import setup
 
 setup(
     name = "caltrain",
-    version = "0.2",
+    version = "0.3",
     description = "GUI and library for Caltrain schedules",
     author = "Heikki Toivonen",
     author_email = "hjtoi at comcast dot net",
