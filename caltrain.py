@@ -130,36 +130,30 @@ def am_pm(table, row, cell):
        table[0][column] == '195':
         cell = '11:01'
     
+    def decorated(value):
+        assert value.find(':') > -1
+        above_hours = int(value[:value.find(':')])
+        
+        if above_hours != cell_hours and above_hours != 12 and \
+           (above_hours > cell_hours or cell_hours == 12):
+            if value[-2:] == 'AM':
+                return cell + ' PM'
+            return cell + ' AM'
+
+        return cell + value[-3:]
+        
     # start from latest row, going up, first row has train numbers so skip
     for i in range(len(table) - 1, 1, -1):
         above = table[i][column]
         if above and '-' not in above:
-            assert above.find(':') > -1
-            above_hours = int(above[:above.find(':')])
-            
-            if above_hours != cell_hours and above_hours != 12 and \
-               (above_hours > cell_hours or cell_hours == 12):
-                if above[-2:] == 'AM':
-                    return cell + ' PM'
-                return cell + ' AM'
-
-            return cell + above[-3:]
-            
+            return decorated(above)
+        
     # no values above, look to the left
     # start from latest column, go left, first column has stations so skip
     for i in range(column - 1, 1, -1):
         left = row[i]
         if left and '-' not in left:
-            assert left.find(':') > -1
-            left_hours = int(left[:left.find(':')])
-            
-            if left_hours != cell_hours and left_hours != 12 and \
-               (left_hours > cell_hours or cell_hours == 12):
-                if left[-2:] == 'AM':
-                    return cell + ' PM'
-                return cell + ' AM'
-
-            return cell + left[-3:]
+            return decorated(left)
             
     # We rely on the fact that currently this always means AM
     return cell + ' AM'
