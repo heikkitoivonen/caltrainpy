@@ -66,12 +66,18 @@ td.time {border-left: solid 1px black;}
 table {
   border-collapse: collapse;
   margin: 1px;
+  width: 99.8%; /* Work around annoying Fx 2.x bug. */
 }
 
 tbody > tr:hover {background-color: lightgrey;}
 
 select, option {font-size: x-small;}
 th, td {font-size: small;}
+
+tfoot {
+  background-color: pink;
+  border-top: solid 1px black;
+}
 
 /* Now the tricky stuff, getting vertical scrollbar for times */
 /* This works pretty good in Firefox, but in IE cells become too high,
@@ -236,7 +242,7 @@ function writeTable(day, direction, fromSelect, toSelect, schedules) {
 <thead id="thead"> \
 <tr><th colspan="2" id="topleft"><input id="day" onclick="swapButtonValue(\'day\', weekday, weekend);" value="' +
   day + '" type="button"></input> \
-<a href="/" onclick="about(event);">About</a></th><th id="topright"><input type="button" id="direction" onclick="swapButtonValue(\'direction\', northbound, southbound);" value="' +
+</th><th id="topright"><input type="button" id="direction" onclick="swapButtonValue(\'direction\', northbound, southbound);" value="' +
   direction + '"></input></th></tr>';
 
     if (screen.width < 360) { // Not completely accurate, but seems good enough
@@ -250,12 +256,18 @@ function writeTable(day, direction, fromSelect, toSelect, schedules) {
     }
 
     var t3 = '</thead> \
+<tfoot><tr><td colspan="3">CaltrainJS 0.3.1: Online \
+<a href="http://caltrain.com">Caltrain</a> schedule for \
+Windows Mobile and other small devices. Schedules updated March 8, 2008. \
+This is free software provided under \
+the MIT License; see source for details. Enjoy! \
+--<a href="http://heikkitoivonen.net">Heikki&nbsp;Toivonen</a></th></tr></tfoot> \
  \
 <tbody id="schedule">' + schedules + ' \
 </tbody> \
 </table>';
      
-    document.getElementById("body").innerHTML = t1 + t2 + t3;
+    document.getElementById("schedulecontainer").innerHTML = t1 + t2 + t3;
 }
 
 function onResize() {
@@ -315,15 +327,14 @@ function onLoad() {
     // Fill with real data
     rewriteTable(false);
 }
-
-function about(event) {
-    alert("CaltrainJS 0.3\nSchedules as of March 3, 2008\n(C) Heikki Toivonen 2008\nhjtoi at comcast dot net");
-    event.preventDefault();
-}
 </script>
 </head>
 
 <body id="body" onload="onLoad();" onresize="onResize();">
+<div id="schedulecontainer">
 <noscript><p>Javascript required!</p></noscript>
+</div>
+<div id="footer">
+</div>
 </body>
 </html>
