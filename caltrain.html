@@ -79,6 +79,10 @@ tfoot {
   border-top: solid 1px black;
 }
 
+#allcontainer, label {
+  font-size: x-small;
+}
+
 #footer {
   margin: 0;
   padding: 0;
@@ -144,6 +148,7 @@ function rewriteTable(swapStations) {
     var toStation = toNode.options[toNode.selectedIndex].text;
     var day = document.getElementById("day").value;
     var direction = document.getElementById("direction").value;
+    var allTrains = document.getElementById("alltrains").checked;
 
     // This makes it so that when switching direction, we swap the column
     // order (the departure station will always be first).
@@ -210,35 +215,42 @@ function rewriteTable(swapStations) {
         // Rebuild schedule
         var count = trains.length;
         for (i = 1; i < count; i++) { // 1st is station name or "Train No."
-            schedules += "<tr><td>" + trains[i] + "</td><td class='time'>";
-
             departureTime = fromTimes[i];
-            departureTime = departureTime.substring(0, departureTime.length - 1); // cut 'M'
-            schedules += departureTime + "</td><td class='time'>";
-
+            departureTime = departureTime.substring(0, departureTime.length - 1); // cut 'M' or '-'
             arrivalTime = toTimes[i];
-            arrivalTime = arrivalTime.substring(0, arrivalTime.length - 1); // cut 'M'
-            schedules += arrivalTime + "</td></tr>";
+            arrivalTime = arrivalTime.substring(0, arrivalTime.length - 1); // cut 'M' or '-'
+
+            if ((departureTime != "" && arrivalTime != "") ||
+                 allTrains) {            
+	            schedules += "<tr><td>" + trains[i] + "</td><td class='time'>";
+	
+	            schedules += departureTime + "</td><td class='time'>";
+	
+	            schedules += arrivalTime + "</td></tr>";
+            }
         }
     }
 
     // Write the table
-    writeTable(day, direction, fromSelect, toSelect, schedules);
+    writeTable(day, direction, fromSelect, toSelect, schedules, allTrains);
 
     // Finally select for real
     fromNode = document.getElementById("from");
     toNode = document.getElementById("to");
+    allNode = document.getElementById("alltrains");
     fromNode.selectedIndex = fromSelected;
     toNode.selectedIndex = toSelected;
+    allNode.checked = allTrains;
     
     // Store values into cookies for later retrieval
     createCookie("day", day, 365);
     createCookie("direction", direction, 365);
     createCookie("fromStation", fromStation, 365);
     createCookie("toStation", toStation, 365);
+    createCookie("allTrains", allTrains ? "true" : "false", 365);
 }
 
-function writeTable(day, direction, fromSelect, toSelect, schedules) {
+function writeTable(day, direction, fromSelect, toSelect, schedules, allTrains) {
     // Write the table. This is pretty yucky, but Internet Explorer Mobile
     // in WM5 and WM6 does not allow us the modify table via DOM, and the
     // only way seems to be to write the whole table at once.
@@ -247,7 +259,10 @@ function writeTable(day, direction, fromSelect, toSelect, schedules) {
 <thead id="thead"> \
 <tr><th colspan="2" id="topleft"><input id="day" onclick="swapButtonValue(\'day\', weekday, weekend);" value="' +
   day + '" type="button"></input> \
-</th><th id="topright"><input type="button" id="direction" onclick="swapButtonValue(\'direction\', northbound, southbound);" value="' +
+<span id="allcontainer"><input type="checkbox" id="alltrains" \
+onclick="rewriteTable(false);" checked="' + 
+  allTrains + '"></input><label for="alltrains">All</label></span> \
+</th><th id="topright" valign="top"><input type="button" id="direction" onclick="swapButtonValue(\'direction\', northbound, southbound);" value="' +
   direction + '"></input></th></tr>';
 
     if (screen.width < 360) { // Not completely accurate, but seems good enough
@@ -261,9 +276,12 @@ function writeTable(day, direction, fromSelect, toSelect, schedules) {
     }
 
     var t3 = '</thead> \
-<tfoot><tr><td colspan="3"><a href="developers.html">CaltrainJS</a> 0.3.1: Online \
+<tfoot><tr><td colspan="3"><a href="developers.html">CaltrainJS</a> 0.4: Online \
 <a href="http://caltrain.com">Caltrain</a> schedule for \
-Windows Mobile and other small devices. Schedules updated March 8, 2008. \
+<!-- google_ad_section_start --> \
+Windows Mobile and other small devices. \
+<!-- google_ad_section_end --> \
+Schedules updated March 8, 2008. \
 This is free software provided under \
 the MIT License; see source for details. Enjoy! \
 --<a href="http://heikkitoivonen.net">Heikki&nbsp;Toivonen</a></th></tr></tfoot> \
@@ -273,6 +291,10 @@ the MIT License; see source for details. Enjoy! \
 </table>';
      
     document.getElementById("schedulecontainer").innerHTML = t1 + t2 + t3;
+    
+    // At least Firefox 2.x seems to have a bug where it does not honor the
+    // value set for the checkbox, so force it again here
+    document.getElementById("alltrains").checked = allTrains; 
 }
 
 function onResize() {
@@ -308,6 +330,7 @@ function onLoad() {
     var direction = readCookie("direction");
     var fromStation = readCookie("fromStation");
     var toStation = readCookie("toStation");
+    var allTrains = readCookie("allTrains");
     // Don't trust cookie values without checking
     if (day != weekday && day != weekend) {
         day = weekday
@@ -321,13 +344,19 @@ function onLoad() {
     if (toStation && toStation.match(/[^a-zA-Z0-9 \.]/)) { // ensures no markup
         toStation = ""; // rewriteTable will pick the right value
     }
+    if (allTrains == "true") {
+        allTrains = true;
+    } else {
+        allTrains = false;
+    }
     
     // Initialize
     writeTable(day,
                direction,
                '<select id="from" onchange="rewriteTable(false);"><option>' + fromStation + '</option></select>',
                '<select id="to" onchange="rewriteTable(false);"><option>' + toStation + '</option></select>',
-               '');
+               '',
+               allTrains);
 
     // Fill with real data
     rewriteTable(false);
