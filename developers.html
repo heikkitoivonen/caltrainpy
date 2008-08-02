@@ -3,7 +3,7 @@
 <!--
 The MIT License
 
-Copyright (c) 2008 Heikki Toivonen <hjtoi at comcast dot net>
+Copyright (c) 2008 Heikki Toivonen <My first name at heikkitoivonen.net>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,39 +25,76 @@ THE SOFTWARE.
 -->
 
 <head>
-<title>Caltrain Schedules in Python and Javascript</title>
+<title>Caltrain Schedules in Python and Javascript: Public Transportation Made Easy</title>
+<meta name="keywords" content="online, caltrain, schedule, javascript, mobile, public transportation">
+<link rel="stylesheet" href="http://heikkitoivonen.net/site.css" type="text/css" media="screen"> 
 <link rel="shortcut icon" href="/favicon.ico" type="image/vnd.microsoft.icon">
 </head>
 
 <body>
-<h1>Caltrain Schedules in Python and Javascript</h2>
+<h1>Caltrain Schedules in Python and Javascript: Public Transportation Made Easy</h2>
 
 <script type="text/javascript" src="http://www.ohloh.net/projects/11565/widgets/project_thin_badge"></script>
 
 <h2>CaltrainPY</h2>
 
-<p>I started on the Python version since I wanted a schedule for my Windows
-Mobile device after I had migrated away from a PalmOS device which had
-a great Caltrain schedule application. Unfortunately Python doesn't run very
-well on Windows Mobile, so I have pretty much stopped improving the UI
-of the Python version.</p>
+<p>I started on the Python version since I wanted a schedule for my
+<!-- google_ad_section_start -->
+Microsoft Windows Mobile device
+<!-- google_ad_section_end -->
+after I had migrated away from a
+<!-- google_ad_section_start(weight=ignore) -->
+PalmOS
+<!-- google_ad_section_end -->
+device which had
+a great Caltrain schedule application. The GUI is done using the
+Tkinter package. Unfortunately Python doesn't run very
+well on Windows Mobile, which lead me to start working on the Javascript
+version (see below).</p>
 
-<img src="caltrain-02.png" alt="CaltrainPY 0.2 Screenshot">
+<img src="caltrainpy.png" alt="CaltrainPY Screenshot">
+
+<p>It would be interesting to see if the Python versions works well on
+OpenMoko. PyGTK might be a better option than Tkinter in that case.</p>
 
 <p><a href="http://pypi.python.org/pypi/caltrain">CaltrainPY</a> version is
 available from the Python Package Index aka
-Cheeseshop; be sure to read the installation instructions.</p>
+Cheeseshop, just <tt>easy_install caltrain</tt>.</p>
 
 <p>The Python version can also work as a library to screen scrape the online
 Caltrain schedules and provide output in various formats, including JSON.</p>
 
+<div>
+<script type="text/javascript"><!--
+google_ad_client = "pub-3111444847257631";
+/* 468x60, luk created 7/29/08 */
+google_ad_slot = "1888012724";
+google_ad_width = 468;
+google_ad_height = 60;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</div>
+
 <h2>CaltrainJS</h2>
 
-<p>I used the JSON output as basis for the Javascript version. The Javascript
-version is available online at
+<p>I used the JSON output from CaltrainPY as basis for the Javascript version.
+The main targeted platform is Microsoft Windows Mobile 6, but it works equally
+well in desktop clients and should work in WM 5 as well. Unfortunately the
+experience is not good in an Apple iPhone,
+but since I don't have an iPhone I haven't been able to debug the issues
+fully. Any help with iPhone support appreciated.</p>
+
+<p>The Javascript version is available online at
 <a href="http://caltrain.heikkitoivonen.net">caltrain.heikkitoivonen.net</a>.</p>
 
-<img src="caltrainjs-031.png" alt="CaltrainJS 0.3.1 Screenshot">
+<a href="/"><img src="caltrainjs.png" alt="CaltrainJS Screenshot" border="0"></a>
+
+<h2>License</h2>
+
+<p>The source code is available under the MIT License.</p>
 
 <h2>Source</h2>
 

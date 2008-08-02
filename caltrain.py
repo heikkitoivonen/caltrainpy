@@ -2,7 +2,7 @@
 # 
 # The MIT License
 #
-# Copyright (c) 2007-2008 Heikki Toivonen <hjtoi at comcast dot net>
+# Copyright (c) 2007-2008 Heikki Toivonen <My first name at heikkitoivonen.net>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -33,6 +33,9 @@ example Windows Mobile. Alternatively can be imported to provide schedule
 parsing etc.
 """
 
+__all__ = ["version", "FORMAT_JSON", "FORMAT_HTML", "FORMAT_PYTHON",
+           "scrape_timetable", "Caltrain", "gui"]
+
 # Tested on Cingular 8525 running Windows Mobile 5 and Python 2.5+Tkinter.
 #
 # My installation:
@@ -46,6 +49,9 @@ parsing etc.
 # Made CaltrainPy directory, a sibling of Python25 and placed caltrain.py
 # there. Launched caltrain.py by clicking on it in Explorer.
 #
+# CaltrainPy 0.4
+# - Show all trains or only trains that stop at selected stations
+# - installable with easy_install, also places "caltrain" command in PATH
 # CaltrainPy 0.3
 # - Update to schedules published March 3, 2008
 # - fix AM/PM bugs
@@ -65,9 +71,10 @@ parsing etc.
 # * Fit the screen ;)
 # * Respond to OK on Windows Mobile
 # * About
-# * Show only trains that stop at selected stations
 # * Map
 # ...
+
+version = "0.4"
 
 import array
 from urllib2 import urlopen
@@ -114,7 +121,8 @@ def am_pm(table, row, cell):
     
     @param table: Table as filled so far.
     @param row:   Row as filled so far.
-    @param cell:  Cell value (without AM/PM) that is about to be added to row.
+    @param cell:  Cell value (without AM/PM) that is about to be added
+                  to row.
     @return:      True if need to change AM/PM.
     """
     column = len(row)
@@ -161,12 +169,14 @@ def am_pm(table, row, cell):
 
 def scrape_timetable(html=None, format=FORMAT_PYTHON):
     """
-    Scrape timetables from HTML, and return them in machine readable format.
+    Scrape timetables from HTML, and return them in machine
+    readable format.
 
-    @param html:   If None, fetch the timetable first, otherwise expected to be
-                   the HTML string to parse.
-    @param format: In what format should results be returns, default
-                   FORMAT_PYTHON. Other legal values FORMAT_JSON, FORMAT_HTML.
+    @param html:   If None, fetch the timetable first, otherwise
+                   expected to be the HTML string to parse.
+    @param format: In what format should results be returned,
+                   default FORMAT_PYTHON. Other legal values
+                   FORMAT_JSON, FORMAT_HTML.
     """
     # This is somewhat quick and dirty parsing, but given that it parses
     # ok now (as of 2008-3-4) and that the original format is subject to
@@ -519,9 +529,17 @@ class MultiListbox(Frame):
 
 
 class Caltrain(object):
+    """
+    The GUI part. 
+
+    Typically you would launch the GUI like so:
+    
+        caltrain = Caltrain()
+        caltrain.root.mainloop()
+    """
     def __init__(self):
         self.root = Tk()
-        self.root.title("CaltrainPy")
+        self.root.title("CaltrainPy %s" % version)
 
         # This makes it full screen, but for some reason controls don't fill
         # It also makes OptionMenus hard to use (seems like a bug)
@@ -531,6 +549,7 @@ class Caltrain(object):
         self.init()
 
     def onDays(self):
+        """Select days change"""
         text = self.days['text']
         if text == weekday:
             self.days['text'] = weekend
@@ -540,6 +559,7 @@ class Caltrain(object):
         self.updateFromTo()
 
     def onDirection(self):
+        """Direction change"""
         if self.direction['text'] == northbound:
             self.direction['text'] = southbound
         else:
@@ -551,7 +571,12 @@ class Caltrain(object):
         
         self.updateTable()
 
+    def onAll(self):
+        """What trains to show change"""
+        self.updateTable()
+
     def updateFromTo(self, _a=None, _b=None, _c=None):
+        """Departure or destination change; rebuild"""
         fromStation = self.fromDefault.get()
         toStation = self.toDefault.get()
         day = self.days['text']
@@ -573,25 +598,35 @@ class Caltrain(object):
         self.updateTable()
         
     def updateTable(self, _a=None):
+        """Update the schedule part of the GUI"""
         fromStation = self.fromDefault.get()
         toStation = self.toDefault.get()
         day = self.days['text']
         direction = self.direction['text']
+        all = self.show_all.get()
         
         self.trains = MultiListbox(self.root, (("Train", 1), (fromStation, 2),
                                                (toStation, 3)))
         for train, fromTime, toTime in zip(service[day][direction][trainNumber],
                                            service[day][direction][fromStation],
                                            service[day][direction][toStation]):
-            self.trains.insert(END, (train, fromTime, toTime))
+            fromTime = fromTime.replace("-", "")
+            toTime = toTime.replace("-", "")
+            if (fromTime and toTime) or all:
+                self.trains.insert(END, (train, fromTime, toTime))
         self.trains.grid(row=2, columnspan=3, sticky=W+E)
 
     def init(self):
+        """Lay out the controls"""
         # top row buttons
         self.days = Button(self.root, text=weekday, command=self.onDays)
+        self.show_all = IntVar()
+        self.all = Checkbutton(self.root, text="All", command=self.onAll,
+                               variable=self.show_all)
         self.direction = Button(self.root, text=northbound,
                                 command=self.onDirection)
-        self.days.grid(row=0, columnspan=2, sticky=W)
+        self.days.grid(row=0, column=0, sticky=W)
+        self.all.grid(row=0, column=1, sticky=W)
         self.direction.grid(row=0, column=2, sticky=E)
 
         # Second row label and OptionsMenus
@@ -612,6 +647,14 @@ class Caltrain(object):
         # Timetable
         self.updateTable()
 
-if __name__ == "__main__":
+
+def gui():
+    """
+    Convenience function for launching the GUI.
+    """
     caltrain = Caltrain()
     caltrain.root.mainloop()
+
+    
+if __name__ == "__main__":
+    gui()

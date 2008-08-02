@@ -2,7 +2,7 @@
 #
 # The MIT License
 #
-# Copyright (c) 2008 Heikki Toivonen <hjtoi at comcast dot net>
+# Copyright (c) 2008 Heikki Toivonen <My first name at heikkitoivonen.net>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -22,17 +22,42 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from distutils.core import setup
 
-setup(
-    name = "caltrain",
-    version = "0.3",
-    description = "GUI and library for Caltrain schedules",
-    author = "Heikki Toivonen",
-    author_email = "hjtoi at comcast dot net",
-    license = "The MIT License",
-    py_modules = ["caltrain"],
-    #extras_require = {'JSON': ['python-jason >=3.4', 'BeautifulSoup >=3.0.4'],
-    #                  'parser': ['BeautifulSoup >=3.0.4'],
-    #                  },
-)
+setup_args = {
+    "name": "caltrain",
+    "version": "0.4",
+    "platforms": ["any"],
+    "description": "GUI and library for Caltrain schedules",
+    "author": "Heikki Toivonen",
+    "author_email": "My first name at heikkitoivonen.net",
+    "url": 'http://caltrain.heikkitoivonen.net/developers.html',
+    "license": "The MIT License",
+    "py_modules": ["caltrain"],
+    "classifiers": [
+        "Development Status :: 4 - Beta",
+        "Intended Audience :: Developers",
+        "Intended Audience :: End Users/Desktop",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+    ], 
+}
+
+try:
+    from setuptools import setup
+    
+    setup_args["zip_safe"] = True
+    setup_args["entry_points"] = {
+        "gui_scripts": [
+            "caltrain = caltrain:gui",
+        ]
+    }
+    setup_args["extras_require"] = {
+        "JSON": ["python-json >=3.4", "BeautifulSoup >=3.0.4"],
+        "parser": ["BeautifulSoup >=3.0.4"],
+    }
+except ImportError:
+    from distutils.core import setup
+
+setup(**setup_args)
