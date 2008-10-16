@@ -30,7 +30,7 @@ setup_args = {
     "description": "GUI and library for Caltrain schedules",
     "author": "Heikki Toivonen",
     "author_email": "My first name at heikkitoivonen.net",
-    "url": 'http://caltrain.heikkitoivonen.net/developers.html',
+    "url": 'http://www.heikkitoivonen.net/caltrain',
     "license": "The MIT License",
     "py_modules": ["caltrain"],
     "classifiers": [
