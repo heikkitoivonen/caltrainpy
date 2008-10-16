@@ -25,7 +25,7 @@
 
 setup_args = {
     "name": "caltrain",
-    "version": "0.4",
+    "version": "0.5",
     "platforms": ["any"],
     "description": "GUI and library for Caltrain schedules",
     "author": "Heikki Toivonen",
