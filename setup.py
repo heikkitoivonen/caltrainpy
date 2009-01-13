@@ -2,7 +2,7 @@
 #
 # The MIT License
 #
-# Copyright (c) 2008 Heikki Toivonen <My first name at heikkitoivonen.net>
+# Copyright (c) 2008-2009 Heikki Toivonen <My first name at heikkitoivonen.net>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@
 
 setup_args = {
     "name": "caltrain",
-    "version": "0.4",
+    "version": "0.4.1",
     "platforms": ["any"],
     "description": "GUI and library for Caltrain schedules",
     "author": "Heikki Toivonen",

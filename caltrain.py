@@ -2,7 +2,7 @@
 # 
 # The MIT License
 #
-# Copyright (c) 2007-2008 Heikki Toivonen <My first name at heikkitoivonen.net>
+# Copyright (c) 2007-2009 Heikki Toivonen <My first name at heikkitoivonen.net>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -49,6 +49,8 @@ __all__ = ["version", "FORMAT_JSON", "FORMAT_HTML", "FORMAT_PYTHON",
 # Made CaltrainPy directory, a sibling of Python25 and placed caltrain.py
 # there. Launched caltrain.py by clicking on it in Explorer.
 #
+# CaltrainPy 0.4.1
+# - January 1, 2009 timetable
 # CaltrainPy 0.4
 # - Show all trains or only trains that stop at selected stations
 # - installable with easy_install, also places "caltrain" command in PATH
@@ -74,7 +76,7 @@ __all__ = ["version", "FORMAT_JSON", "FORMAT_HTML", "FORMAT_PYTHON",
 # * Map
 # ...
 
-version = "0.4"
+version = "0.4.1"
 
 import array
 from urllib2 import urlopen
@@ -313,7 +315,7 @@ u'Lawrence': [u'4:40 AM', u'5:15 AM', u'-', u'6:12 AM', u'-', u'-', u'-', u'-', 
 u'Burlingame': [u'5:28 AM', u'6:03 AM', u'-', u'-', u'-', u'7:11 AM', u'-', u'7:35 AM', u'-', u'-', u'8:11 AM', u'-', u'8:35 AM', u'-', u'-', u'9:11 AM', u'9:36 AM', u'10:08 AM', u'10:36 AM', u'11:08 AM', u'11:36 AM', u'12:08 PM', u'12:36 PM', u'1:08 PM', u'1:36 PM', u'2:08 PM', u'2:36 PM', u'3:08 PM', u'3:36 PM', u'4:05 PM', u'-', u'4:51 PM', u'-', u'-', u'-', u'5:51 PM', u'-', u'6:15 PM', u'-', u'-', u'6:51 PM', u'-', u'7:15 PM', u'7:35 PM', u'7:48 PM', u'8:28 PM', u'9:28 PM', u'10:28 PM', u'11:28 PM'],
 u'Mountain View': [u'4:49 AM', u'5:24 AM', u'5:57 AM', u'6:23 AM', u'-', u'6:37 AM', u'6:57 AM', u'7:05 AM', u'7:23 AM', u'-', u'7:37 AM', u'7:57 AM', u'8:05 AM', u'8:23 AM', u'-', u'8:37 AM', u'8:59 AM', u'9:29 AM', u'9:59 AM', u'10:29 AM', u'10:59 AM', u'11:29 AM', u'11:59 AM', u'12:29 PM', u'12:59 PM', u'1:29 PM', u'1:59 PM', u'2:29 PM', u'2:59 PM', u'3:26 PM', u'4:03 PM', u'-', u'4:37 PM', u'5:03 PM', u'4:58 PM', u'-', u'5:37 PM', u'5:46 PM', u'6:03 PM', u'5:58 PM', u'-', u'6:37 PM', u'6:46 PM', u'7:00 PM', u'7:09 PM', u'7:49 PM', u'8:49 PM', u'9:49 PM', u'10:49 PM'],
 u'22nd Street': [u'5:52 AM', u'6:27 AM', u'-', u'-', u'-', u'7:40* AM', u'-', u'-', u'-', u'-', u'8:40* AM', u'-', u'-', u'-', u'-', u'9:37 AM', u'-', u'10:32 AM', u'-', u'11:32 AM', u'-', u'12:32 PM', u'-', u'1:32 PM', u'-', u'2:32 PM', u'-', u'3:32 PM', u'-', u'4:29 PM', u'4:55 PM', u'5:21* PM', u'5:17 PM', u'5:55 PM', u'5:37 PM', u'6:21* PM', u'6:17 PM', u'-', u'6:55 PM', u'6:37 PM', u'7:21* PM', u'7:17 PM', u'-', u'7:53 PM', u'8:12 PM', u'8:52 PM', u'9:52 PM', u'10:52 PM', u'11:52 PM'],
-u'Bayshore': [u'5:47 AM', u'6:22 AM', u'-', u'-', u'-', u'7:33* AM', u'-', u'-', u'-', u'-', u'8:33* AM', u'-', u'-', u'-', u'-', u'9:31 AM', u'-', u'10:27 AM', u'-', u'11:27 AM', u'-', u'12:27 PM', u'-', u'1:27 PM', u'-', u'2:27 PM', u'-', u'3:27 PM', u'-', u'4:24 PM', u'-', u'5:13* PM', u'-', u'-', u'-', u'6:13* PM', u'-', u'-', u'-', u'-', u'7:13* PM', u'-', u'-', u'-', u'8:07 PM', u'8:57 PM', u'9:47 PM', u'10:47 PM', u'11:47 PM'],
+u'Bayshore': [u'5:47 AM', u'6:22 AM', u'-', u'-', u'-', u'7:33* AM', u'-', u'-', u'-', u'-', u'8:33* AM', u'-', u'-', u'-', u'-', u'9:31 AM', u'-', u'10:27 AM', u'-', u'11:27 AM', u'-', u'12:27 PM', u'-', u'1:27 PM', u'-', u'2:27 PM', u'-', u'3:27 PM', u'-', u'4:24 PM', u'-', u'5:13* PM', u'-', u'-', u'-', u'6:13* PM', u'-', u'-', u'-', u'-', u'7:13* PM', u'-', u'-', u'-', u'8:07 PM', u'8:47 PM', u'9:47 PM', u'10:47 PM', u'11:47 PM'],
 u'San Antonio': [u'4:53 AM', u'5:28 AM', u'-', u'6:27 AM', u'-', u'-', u'-', u'-', u'7:27 AM', u'-', u'-', u'-', u'-', u'8:27 AM', u'-', u'-', u'9:03 AM', u'9:33 AM', u'10:03 AM', u'10:33 AM', u'11:03 AM', u'11:33 AM', u'12:03 PM', u'12:33 PM', u'1:03 PM', u'1:33 PM', u'2:03 PM', u'2:33 PM', u'3:03 PM', u'3:30 PM', u'4:07 PM', u'-', u'-', u'5:07 PM', u'-', u'-', u'-', u'-', u'6:07 PM', u'-', u'-', u'-', u'-', u'-', u'7:13 PM', u'7:53 PM', u'8:53 PM', u'9:53 PM', u'10:53 PM'],
 u'Millbrae': [u'5:33 AM', u'6:08 AM', u'6:24 AM', u'6:59 AM', u'6:45 AM', u'7:17 AM', u'7:24 AM', u'-', u'7:59 AM', u'7:45 AM', u'8:17 AM', u'8:24 AM', u'-', u'8:59 AM', u'8:45 AM', u'9:17 AM', u'9:41 AM', u'10:13 AM', u'10:41 AM', u'11:13 AM', u'11:41 AM', u'12:13 PM', u'12:41 PM', u'1:13 PM', u'1:41 PM', u'2:13 PM', u'2:41 PM', u'3:13 PM', u'3:41 PM', u'4:10 PM', u'4:43 PM', u'4:57 PM', u'5:05 PM', u'5:43 PM', u'5:25 PM', u'5:57 PM', u'6:05 PM', u'-', u'6:43 PM', u'6:25 PM', u'6:57 PM', u'7:05 PM', u'-', u'7:41 PM', u'7:53 PM', u'8:33 PM', u'9:33 PM', u'10:33 PM', u'11:33 PM'],
 u'San Carlos': [u'5:13 AM', u'5:48 AM', u'-', u'-', u'-', u'6:55 AM', u'-', u'7:24 AM', u'-', u'-', u'7:55 AM', u'-', u'8:24 AM', u'-', u'-', u'8:55 AM', u'9:23 AM', u'9:53 AM', u'10:23 AM', u'10:53 AM', u'11:23 AM', u'11:53 AM', u'12:23 PM', u'12:53 PM', u'1:23 PM', u'1:53 PM', u'2:23 PM', u'2:53 PM', u'3:23 PM', u'3:50 PM', u'4:29 PM', u'4:35 PM', u'-', u'5:29 PM', u'-', u'5:35 PM', u'-', u'6:04 PM', u'6:29 PM', u'-', u'6:35 PM', u'-', u'7:04 PM', u'7:23 PM', u'7:33 PM', u'8:13 PM', u'9:13 PM', u'10:13 PM', u'11:13 PM'],
@@ -415,10 +417,10 @@ u'Train No.': [u'422', u'424', u'426', u'428', u'430', u'432', u'434', u'436', u
 u'Menlo Park': [u'8:59 AM', u'9:59 AM', u'10:59 AM', u'11:59 AM', u'12:59 PM', u'1:59 PM', u'2:59 PM', u'3:59 PM', u'4:59 PM', u'5:59 PM', u'6:59 PM', u'7:59 PM', u'8:59 PM', u'9:59 PM', u'10:59 PM', u'1:00 AM'],
 u'San Jose': [u'9:36 AM', u'10:36 AM', u'11:36 AM', u'12:36 PM', u'1:36 PM', u'2:36 PM', u'3:36 PM', u'4:36 PM', u'5:36 PM', u'6:36 PM', u'7:36 PM', u'8:36 PM', u'9:36 PM', u'10:36 PM', u'11:36 PM', u'1:37 AM'],
 u'Hillsdale': [u'8:40 AM', u'9:40 AM', u'10:40 AM', u'11:40 AM', u'12:40 PM', u'1:40 PM', u'2:40 PM', u'3:40 PM', u'4:40 PM', u'5:40 PM', u'6:40 PM', u'7:40 PM', u'8:40 PM', u'9:40 PM', u'10:40 PM', u'12:41 AM'],
-u'Shuttle arr. Tamien': [u'10:03 AM', u'11:03 AM', u'12:03 PM', u'1:03 PM', u'2:03 PM', u'3:03 PM', u'4:03 PM', u'5:03 PM', u'6:03 PM', u'7:03 PM', u'8:03 PM', u'9:03 PM', u'10:03 PM', u'', u'', u''],
+u'Shuttle arr. Tamien': [u'9:58 AM', u'10:58 AM', u'11:58 AM', u'12:58 PM', u'1:58 PM', u'2:58 PM', u'3:58 PM', u'4:58 PM', u'5:58 PM', u'6:58 PM', u'7:58 PM', u'8:58 PM', u'9:58 PM', u'', u'', u''],
 u'Sunnyvale': [u'9:19 AM', u'10:19 AM', u'11:19 AM', u'12:19 PM', u'1:19 PM', u'2:19 PM', u'3:19 PM', u'4:19 PM', u'5:19 PM', u'6:19 PM', u'7:19 PM', u'8:19 PM', u'9:19 PM', u'10:19 PM', u'11:19 PM', u'1:20 AM'],
 u'Palo Alto': [u'9:02 AM', u'10:02 AM', u'11:02 AM', u'12:02 PM', u'1:02 PM', u'2:02 PM', u'3:02 PM', u'4:02 PM', u'5:02 PM', u'6:02 PM', u'7:02 PM', u'8:02 PM', u'9:02 PM', u'10:02 PM', u'11:02 PM', u'1:03 AM'],
-u'Shuttle Bus dep. SJ': [u'9:55 AM', u'10:55 AM', u'11:55 AM', u'12:55 PM', u'1:55 PM', u'2:55 PM', u'3:55 PM', u'4:55 PM', u'5:55 PM', u'6:55 PM', u'7:55 PM', u'8:55 PM', u'9:55 PM', u'', u'', u''],
+u'Shuttle Bus dep. SJ': [u'9:50 AM', u'10:50 AM', u'11:50 AM', u'12:50 PM', u'1:50 PM', u'2:50 PM', u'3:50 PM', u'4:50 PM', u'5:50 PM', u'6:50 PM', u'7:50 PM', u'8:50 PM', u'9:50 PM', u'', u'', u''],
 u'Redwood City': [u'8:52 AM', u'9:52 AM', u'10:52 AM', u'11:52 AM', u'12:52 PM', u'1:52 PM', u'2:52 PM', u'3:52 PM', u'4:52 PM', u'5:52 PM', u'6:52 PM', u'7:52 PM', u'8:52 PM', u'9:52 PM', u'10:52 PM', u'12:53 AM'],
 u'San Bruno': [u'8:20 AM', u'9:20 AM', u'10:20 AM', u'11:20 AM', u'12:20 PM', u'1:20 PM', u'2:20 PM', u'3:20 PM', u'4:20 PM', u'5:20 PM', u'6:20 PM', u'7:20 PM', u'8:20 PM', u'9:20 PM', u'10:20 PM', u'12:21 AM'],
 u'So. San Francisco': [u'8:16 AM', u'9:16 AM', u'10:16 AM', u'11:16 AM', u'12:16 PM', u'1:16 PM', u'2:16 PM', u'3:16 PM', u'4:16 PM', u'5:16 PM', u'6:16 PM', u'7:16 PM', u'8:16 PM', u'9:16 PM', u'10:16 PM', u'12:17 AM'],
