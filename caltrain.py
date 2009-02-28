@@ -49,6 +49,8 @@ __all__ = ["version", "FORMAT_JSON", "FORMAT_HTML", "FORMAT_PYTHON",
 # Made CaltrainPy directory, a sibling of Python25 and placed caltrain.py
 # there. Launched caltrain.py by clicking on it in Explorer.
 #
+# CaltrainPy 0.5.1
+# - Work around a bug in BeautifulSoup 3.1+
 # CaltrainPy 0.5
 # - March 2, 2009 timetable
 # - q and Esc keys will quit the application
@@ -80,7 +82,7 @@ __all__ = ["version", "FORMAT_JSON", "FORMAT_HTML", "FORMAT_PYTHON",
 # * Map
 # ...
 
-version = "0.5"
+version = "0.5.1"
 
 import array
 import webbrowser
@@ -205,6 +207,8 @@ def scrape_timetable(html=None, format=FORMAT_PYTHON):
     html = html.replace('<sup><a href="#note-early">*</a></sup>', '*')
     # 4. Newlines to spaces
     html = html.replace('<br>', ' ')
+    # 5. BS 3.1+ barfs on this so fix it
+    html = html.replace('</font color>', '</font>')
     
     soup = BeautifulSoup(html)
     
