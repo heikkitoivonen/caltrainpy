@@ -53,6 +53,7 @@ __all__ = ["version", "FORMAT_JSON", "FORMAT_HTML", "FORMAT_PYTHON",
 # - March 2, 2009 timetable
 # - q and Esc keys will quit the application
 # - donate button
+# - Support output in SQL
 # CaltrainPy 0.4.1
 # - January 1, 2009 timetable
 # CaltrainPy 0.4
@@ -82,6 +83,7 @@ __all__ = ["version", "FORMAT_JSON", "FORMAT_HTML", "FORMAT_PYTHON",
 
 version = "0.5"
 
+import os
 import array
 import webbrowser
 from urllib2 import urlopen
@@ -103,6 +105,7 @@ except ImportError:
 FORMAT_PYTHON = 'python'
 FORMAT_JSON   = 'json'
 FORMAT_HTML   = 'html'
+FORMAT_SQL   = 'sql'
 
 # Constant strings
 weekday = "Mon-Fri"
@@ -266,6 +269,92 @@ def scrape_timetable(html=None, format=FORMAT_PYTHON):
                 ret.append('</tr>\n')
             ret.append('</table>\n')
         return ''.join(ret)
+    elif format == FORMAT_SQL:
+        # sqlite format
+        # all:
+        # select t1.train, t1.time, s1.symbol, t2.time, s2.symbol from traintimes as t1, traintimes as t2, symbols as s1, symbols as s2 where t1.train = t2.train and t1.station_id = (select id from stations where station = ?) and t2.station_id = (select id from stations where station = ?) and t1.direction_id = (select id from directions where direction = ?) and t1.day_id = (select id from days where day = ?) and t1.symbol_id = s1.id and t2.symbol_id = s2.id
+        # stops only:
+        # + and t1.time and t2.time
+        ret = []
+        ret.append('create table stations (id INTEGER PRIMARY KEY, station varchar(20) NOT NULL);')
+        ret.append('create table directions (id INTEGER PRIMARY KEY, direction varchar(20) NOT NULL);')
+        ret.append('create table days (id INTEGER PRIMARY KEY, day varchar(20) NOT NULL);')
+        ret.append('create table symbols (id INTEGER PRIMARY KEY, symbol varchar(1) NOT NULL);')
+        ret.append("""create table traintimes (
+        id INTEGER PRIMARY KEY,
+        train varchar(20) NOT NULL,
+        time varchar(5),
+        station_id INTEGER NOT NULL,
+        direction_id INTEGER NOT NULL,
+        day_id INTEGER NOT NULL,
+        symbol_id INTEGER NOT NULL,
+        FOREIGN KEY(station_id) REFERENCES stations(id),
+        FOREIGN KEY(direction_id) REFERENCES directions(id),
+        FOREIGN KEY(day_id) REFERENCES days(id),
+        FOREIGN KEY(symbol_id) REFERENCES symbols(id));""")
+        
+        ret.append("insert into directions values(1, 'northbound');")
+        ret.append("insert into directions values(2, 'southbound');")
+        directions = {'northbound': 1, 'southbound': 2}
+        
+        ret.append("insert into days values(1, 'weekday');")
+        ret.append("insert into days values(2, 'weekend');")
+        days = {'weekday': 1, 'weekend': 2}
+
+        # XXX bullet, express, after-sharks-game train symbols?
+        # XXX or rather: regular, express, bullet TYPE trains
+        ret.append("insert into symbols values(1, '');")
+        ret.append("insert into symbols values(2, '@');")
+        ret.append("insert into symbols values(3, '*');")
+        symbols = {'': 1, '@': 2, '*': 3}
+
+        stations = {}
+
+        direction = 'northbound'
+        day = 'weekday'
+        for onetable in alltables:
+            trains = onetable[0]
+            for row in onetable[1:]:
+                station = row[0]
+                if station not in stations:
+                    stations[station] = len(stations) + 1
+                    ret.append("insert into stations values(%d, '%s');" % (stations[station], station))
+                for i, entry in enumerate(row[1:]):
+                    if not entry or entry == '-':
+                        entry = 'NULL'
+                        symbol = ''
+                    else:
+                        if '@' in entry:
+                            symbol = '@'
+                        elif '*' in entry:
+                            symbol = '*'
+                        else:
+                            symbol = ''
+                        
+                        entry = entry.replace('@', '')
+                        entry = entry.replace('*', '')
+                        
+                        hour, minute = [int(e.strip(' APM')) for e in entry.split(':')]
+                        if 'PM' in entry:
+                            hour += 12
+                        entry = "'%0d:%0d'" % (hour, minute)
+                    
+                    ret.append("insert into traintimes values(NULL, '%s', %s, %d, %d, %d, %d);" % (
+                                trains[i+1], entry, stations[station], directions[direction], days[day], symbols[symbol]))
+            
+            if direction == 'northbound':
+                if day == 'weekday':
+                    direction = 'southbound' # 1
+                else:
+                    direction = 'southbound' # 3
+            else:
+                if day == 'weekday':
+                    direction = 'northbound' # 2
+                    day = 'weekend'
+                else:
+                    break                    # 4
+                
+        return os.linesep.join(ret)        
     else: # FORMAT_JSON
         import json
         return json.write(alltables)
