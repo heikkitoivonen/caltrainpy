@@ -87,7 +87,7 @@ __all__ = ["version", "FORMAT_JSON", "FORMAT_HTML", "FORMAT_PYTHON",
 
 version_info = (0, 6)
 version = '.'.join([str(v) for v in version_info])
-schedule_date_info = (2009, 3, 2)
+schedule_date_info = (2009, 8, 31)
 schedule_date = '-'.join(['%02d' % v for v in schedule_date_info])
 
 import re
@@ -217,7 +217,7 @@ def scrape_timetable(html=None, format=FORMAT_PYTHON):
     # 5. BS 3.1+ barfs on this so fix it
     html = html.replace('</font color>', '</font>')
     # 6. Massage the SATURDAY ONLY/450|454 3-cell construct into the expected format 
-    compile_obj = re.compile(r"""SATURDAY\s*$\s+ONLY""", re.MULTILINE)
+    compile_obj = re.compile(r"""SATURDAY.*ONLY""")
     html = compile_obj.sub('450 SAT. only</span></div></th><th bgcolor="#000000"><div align="center"><span class="style3">454 SAT. only', html, 0)
     html = html.replace("""<td bgcolor="#000000"><div align="center"><u><span class="style3"><strong>450</strong></span></u></div></td>""", '')
     html = html.replace("""<td bgcolor="#000000"><div align="center"><u><span class="style3"><strong>454</strong></span></u></div></td>""", '')
